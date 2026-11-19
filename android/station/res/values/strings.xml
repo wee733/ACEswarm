@@ -7,4 +7,8 @@
     <string name="page_failed">Could not open this page.</string>
     <string name="downloads_unavailable">Downloads are unavailable on this device.</string>
     <string name="download_started">Download started</string>
+    <string name="download_unsupported">This download type is not supported in this view.</string>
+    <string name="ssl_error">Blocked page due to an invalid security certificate.</string>
+    <string name="clear_data_confirm">Clear ACEswarm browser data? This signs you out of web pages and clears favorites, recent apps and cached pages.</string>
+    <string name="clear_data_action">Clear</string>
 </resources>

@@ -2,17 +2,41 @@
 @supports not (inset: 0) {
   .grid { display: flex; flex-wrap: wrap; }
   .grid.place-items-center { align-items: center; justify-content: center; }
-  .grid > * { min-width: 0; }
+  .grid > * { min-width: 0; box-sizing: border-box; }
+  .grid.grid-cols-1 > * { width: 100%; }
+  .grid[class*="gap-"] { margin: calc(var(--ace-h16-gap) / -2); }
+  .grid[class*="gap-"] > * { margin: calc(var(--ace-h16-gap) / 2); }
+  .grid.grid-cols-1[class*="gap-"] > * { width: calc(100% - var(--ace-h16-gap)); }
   .min-h-screen { min-height: 100vh; }
   section.place-items-center > div { width: 460px; max-width: 95vw; }
   .inset-0, .bg-grid { left: 0; right: 0; top: 0; bottom: 0; }
+  .inset-x-0 { left: 0; right: 0; }
+  .inset-y-0 { top: 0; bottom: 0; }
   svg { flex-shrink: 0; }
-  [class*="gap-"]:not(.flex-col) > * + * { margin-left: var(--ace-h16-gap); }
+  [class*="gap-"]:not(.flex-col):not(.grid) > * + * { margin-left: var(--ace-h16-gap); }
   .flex-col[class*="gap-"] > * + * { margin-top: var(--ace-h16-gap); }
   @media (min-width: 40rem) {
     .sm\:flex-row[class*="gap-"] > * + * { margin-left: var(--ace-h16-gap); margin-top: 0; }
+    .grid.sm\:grid-cols-2 > * { width: 50%; }
+    .grid.sm\:grid-cols-2[class*="gap-"] > * { width: calc(50% - var(--ace-h16-gap)); }
   }
   @media (min-width: 48rem) {
     .md\:flex-row[class*="gap-"] > * + * { margin-left: var(--ace-h16-gap); margin-top: 0; }
+    .grid.md\:grid-cols-2 > * { width: 50%; }
+    .grid.md\:grid-cols-2[class*="gap-"] > * { width: calc(50% - var(--ace-h16-gap)); }
+    .grid.md\:grid-cols-3 > * { width: 33.3333%; }
+    .grid.md\:grid-cols-3[class*="gap-"] > * { width: calc(33.3333% - var(--ace-h16-gap)); }
+  }
+  @media (min-width: 64rem) {
+    .grid.lg\:grid-cols-2 > * { width: 50%; }
+    .grid.lg\:grid-cols-2[class*="gap-"] > * { width: calc(50% - var(--ace-h16-gap)); }
+    .grid.lg\:grid-cols-3 > * { width: 33.3333%; }
+    .grid.lg\:grid-cols-3[class*="gap-"] > * { width: calc(33.3333% - var(--ace-h16-gap)); }
+  }
+  @media (min-width: 80rem) {
+    .grid.xl\:grid-cols-2 > * { width: 50%; }
+    .grid.xl\:grid-cols-2[class*="gap-"] > * { width: calc(50% - var(--ace-h16-gap)); }
+    .grid.xl\:grid-cols-4 > * { width: 25%; }
+    .grid.xl\:grid-cols-4[class*="gap-"] > * { width: calc(25% - var(--ace-h16-gap)); }
   }
 }

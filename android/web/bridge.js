@@ -1,4 +1,5 @@
 import { resolveAppearance } from '../../electron/services/appearance.js';
+import { normalizePageUrl, sameOrigin } from './url.mjs';
 
 // This bridge is installed only in the bundled shell. Native guest WebViews do
 // not share it. Package IDs belong to a virtual origin used by upstream favorites.
@@ -13,10 +14,13 @@ let catalog = [];
 let desktopReady = false;
 let recent = read('recent', []);
 let clearingBrowserData = false;
+let pendingClearBrowserData = false;
+let lastSavedDesktop = null;
 
 function read(key, fallback) {
   try {
     const stored = localStorage.getItem('android.' + key);
+    if (key === 'desktop') lastSavedDesktop = stored;
     if (key === 'appearance' || key === 'store') {
       const value = host.getSetting(key);
       if (value !== null && value !== '') return JSON.parse(value);
@@ -30,7 +34,12 @@ function write(key, value) {
   if (key === 'appearance' || key === 'store') {
     host.setSetting(key, JSON.stringify(value));
   } else if (!clearingBrowserData) {
-    localStorage.setItem('android.' + key, JSON.stringify(value));
+    const serialized = JSON.stringify(value);
+    if (key === 'desktop') {
+      if (serialized === lastSavedDesktop) return;
+      lastSavedDesktop = serialized;
+    }
+    localStorage.setItem('android.' + key, serialized);
   }
 }
 function appearance() {
@@ -43,16 +52,30 @@ function refreshCatalog() {
   }));
   return catalog;
 }
+function launcherCatalog() {
+  return catalog.filter(entry => entry.id !== stationId);
+}
+function syncHomeButton() {
+  const button = document.getElementById('open-home');
+  if (button) button.hidden = !catalog.some(entry => entry.id === stationId);
+}
 
-function currentEntries(entries) {
-  return entries.map(entry => entry.url.startsWith(packageOrigin + '/')
-    ? catalog.find(app => app.url === entry.url) : entry).filter(Boolean);
+function currentEntries(entries, excludeBuiltins = false) {
+  if (!Array.isArray(entries)) return [];
+  return entries
+    .filter(entry => entry && typeof entry.url === 'string'
+      && (!excludeBuiltins || (entry.url !== consoleEntry && entry.url !== storeEntry)))
+    .map(entry => entry.url.startsWith(packageOrigin + '/')
+      ? catalog.find(app => app.url === entry.url) : entry)
+    .filter(Boolean);
 }
 
 function syncCatalog() {
-  installedApplications = refreshCatalog();
-  favorites = currentEntries(favorites);
+  refreshCatalog();
+  installedApplications = launcherCatalog();
+  favorites = currentEntries(favorites, true);
   recent = currentEntries(recent);
+  syncHomeButton();
   write('recent', recent);
   renderDesktop();
   if (document.getElementById('application-launcher').open) renderApplicationLauncher();
@@ -64,12 +87,8 @@ function builtinTitle(title) {
   return title === 'Console' ? '控制台' : '商店管理';
 }
 
-function validPage(text) {
-  try {
-    const parsed = new URL(text);
-    return (parsed.protocol === 'http:' || parsed.protocol === 'https:') && Boolean(parsed.hostname)
-      && !parsed.username && !parsed.password && parsed.port !== '0';
-  } catch (_) { return false; }
+function savedStoreUrl() {
+  return normalizePageUrl(read('store', ''));
 }
 
 function remember(entry) {
@@ -80,9 +99,11 @@ function remember(entry) {
 
 function openOnDevice(url) {
   if (url === storeEntry) {
-    const address = read('store', '');
+    const address = savedStoreUrl();
     if (!address) return editStore();
-    return openOnDevice(address);
+    host.openStore(address);
+    remember({ title: builtinTitle('AppStore Admin'), url: storeEntry });
+    return;
   }
   const local = catalog.find(entry => entry.url === url);
   if (local) {
@@ -90,29 +111,36 @@ function openOnDevice(url) {
     remember({ title: local.title, url, favicon: local.favicon });
   } else if (url === consoleEntry) {
     showOpenPageDialog();
-  } else if (validPage(url) && new URL(url).origin !== packageOrigin) {
-    if (url === read('store', '')) host.openStore(url);
-    else host.openPage(url);
-    remember({ title: new URL(url).host, url });
   } else {
-    refreshCatalog();
-    openApplicationLauncher();
+    const normalized = normalizePageUrl(url);
+    if (normalized) {
+      const store = savedStoreUrl();
+      if (store && sameOrigin(normalized, store)) host.openStore(normalized);
+      else host.openPage(normalized);
+      remember({ title: new URL(normalized).host, url: normalized });
+    } else {
+      refreshCatalog();
+      openApplicationLauncher();
+    }
   }
 }
 
 function renderDeviceTasks(container) {
   for (const entry of recent) {
+    const title = entry.url === storeEntry ? builtinTitle('AppStore Admin') : entry.title;
+    const builtin = entry.url === consoleEntry || entry.url === storeEntry;
     const button = document.createElement('button');
     button.className = 'dock-item window-task';
-    button.title = entry.title;
-    button.setAttribute('aria-label', entry.title);
+    button.title = title;
+    button.setAttribute('aria-label', title);
     const label = document.createElement('span');
     label.className = 'dock-label';
-    label.textContent = entry.title;
+    label.textContent = title;
     button.append(applicationIcon(entry), label);
     button.onclick = () => openOnDevice(entry.url);
-    button.oncontextmenu = event => openDockMenu(event, { ...entry, key: desktopState.appKey(entry.url),
-      pinned: favorites.some(item => item.url === entry.url), windows: [] });
+    const key = desktopState.appKey(entry.url);
+    button.oncontextmenu = event => openDockMenu(event, { ...entry, title, key, builtin,
+      pinned: builtin || favorites.some(item => desktopState.appKey(item.url) === key), windows: [] });
     container.append(button);
   }
 }
@@ -120,7 +148,7 @@ function renderDeviceTasks(container) {
 function editStore() {
   setToolsMenuOpen(false);
   const dialog = document.getElementById('android-store-dialog');
-  dialog.querySelector('input').value = read('store', '');
+  dialog.querySelector('input').value = savedStoreUrl();
   dialog.showModal();
   dialog.querySelector('input').focus();
 }
@@ -130,33 +158,35 @@ function installAndroidControls() {
   const storeSettings = document.createElement('button');
   storeSettings.id = 'android-store-settings';
   storeSettings.setAttribute('role', 'menuitem');
+  const storeSettingsLabel = document.createElement('span');
+  storeSettings.append(desktopIcon('store'), storeSettingsLabel);
   const quit = document.getElementById('system-quit');
   quit.parentNode.insertBefore(storeSettings, quit);
   storeSettings.onclick = editStore;
   const dialog = document.createElement('dialog');
   dialog.id = 'android-store-dialog';
   dialog.innerHTML = '<form><div class="dialog-heading"><h2></h2><button type="button" class="icon-button">×</button></div>'
-    + '<label for="android-store-url"></label><input type="url" id="android-store-url" placeholder="https://" required>'
+    + '<label for="android-store-url"></label><input type="text" id="android-store-url" placeholder="http:// or https://" required autocomplete="off">'
     + '<div class="dialog-actions"><button type="submit" class="primary"></button></div></form>';
   document.body.append(dialog);
   dialog.querySelector('button[type="button"]').onclick = () => dialog.close();
   dialog.querySelector('form').onsubmit = event => {
     event.preventDefault();
     const input = dialog.querySelector('input');
-    const url = input.value.trim();
-    if (!validPage(url) || ['workbench.aceswarm.invalid', 'apps.aceswarm.invalid'].includes(new URL(url).hostname)) {
+    const url = normalizePageUrl(input.value);
+    if (!url) {
       input.setCustomValidity(text('Enter an HTTP or HTTPS server address', '请输入 HTTP 或 HTTPS 服务器地址'));
       input.reportValidity();
       return;
     }
     write('store', url);
     dialog.close();
-    openOnDevice(url);
+    openOnDevice(storeEntry);
   };
   dialog.querySelector('input').oninput = event => event.target.setCustomValidity('');
   function translate() {
     const title = text('AppStore address', '应用商店地址');
-    storeSettings.textContent = title;
+    storeSettingsLabel.textContent = title;
     document.getElementById('open-home').textContent = builtinTitle('Console');
     document.getElementById('open-store').textContent = builtinTitle('AppStore Admin');
     if (desktopReady) {
@@ -170,12 +200,17 @@ function installAndroidControls() {
   }
   translate();
   appearanceSubscribers.push(translate);
-  for (const id of ['tools-record', 'tools-fps']) document.getElementById(id).hidden = true;
+  for (const id of ['tools-record', 'tools-fps', 'show-desktop', 'system-desktop']) {
+    const node = document.getElementById(id);
+    if (node) node.hidden = true;
+  }
+  syncHomeButton();
+  refreshDesktopIcons();
   document.getElementById('downloads-button').onclick = () => host.downloads();
 }
 
 const api = {
-  desktopReady: () => { desktopReady = true; },
+  desktopReady: () => { desktopReady = true; syncHomeButton(); },
   builtinTitle, openOnDevice, renderDeviceTasks,
   getAppearance: appearance,
   setAppearance(value) {
@@ -185,31 +220,37 @@ const api = {
     return Promise.resolve(next);
   },
   onAppearance: callback => appearanceSubscribers.push(callback),
-  getInstalledApplications: async () => refreshCatalog(),
+  getInstalledApplications: async () => { refreshCatalog(); return launcherCatalog(); },
   getRunningApplications: async () => [],
   getStartup: async () => {
     refreshCatalog();
+    syncHomeButton();
     const firstState = { favorites: defaultPins.map(id => catalog.find(entry => entry.id === id)).filter(Boolean) };
     const savedState = read('desktop', firstState);
-    savedState.favorites = currentEntries(savedState.favorites || []);
+    savedState.favorites = currentEntries(savedState.favorites || [], true);
     recent = currentEntries(recent);
     return { defaultUrl: consoleEntry, storeUrl: storeEntry, savedState };
   },
   clearBrowserData: async () => {
-    if (clearingBrowserData) return { ok: false };
-    const message = appearance().resolvedLanguage === 'zh-CN'
+    if (clearingBrowserData || pendingClearBrowserData) return { ok: false };
+    pendingClearBrowserData = true;
+    const zh = appearance().resolvedLanguage === 'zh-CN';
+    const message = zh
       ? '清除 ACEswarm 浏览数据？将退出网页账号并清除收藏、最近应用与网页缓存。'
       : 'Clear ACEswarm browser data? This signs you out of web pages and clears favorites, recent apps and cached pages.';
-    if (!window.confirm(message)) return { ok: false };
-    clearingBrowserData = true;
-    localStorage.clear();
-    sessionStorage.clear();
+    const confirmLabel = zh ? '清除' : 'Clear';
+    const cancelLabel = zh ? '取消' : 'Cancel';
     return new Promise(resolve => {
-      window.aceAndroidDataCleared = () => {
+      window.aceAndroidDataCleared = cleared => {
         delete window.aceAndroidDataCleared;
+        pendingClearBrowserData = false;
+        if (!cleared) { resolve({ ok: false }); return; }
+        clearingBrowserData = true;
+        localStorage.clear();
+        sessionStorage.clear();
         resolve({ ok: true });
       };
-      host.clearBrowserData();
+      host.clearBrowserData(message, confirmLabel, cancelLabel);
     });
   },
   saveShellState: async state => write('desktop', state),
@@ -217,7 +258,10 @@ const api = {
     if (action === 'fullscreen') host.fullscreen();
     else if (action === 'quit') host.quit();
   },
-  authorizeUrl: async url => ({ ok: validPage(url), error: 'Use an HTTP or HTTPS address.' }),
+  authorizeUrl: async url => ({
+    ok: Boolean(normalizePageUrl(url)),
+    error: appearance().resolvedLanguage === 'zh-CN' ? '请输入有效的 HTTP 或 HTTPS 地址。' : 'Use an HTTP or HTTPS address.',
+  }),
 };
 for (const callback of [
   'onCloseCurrentTab', 'onClearBrowserData', 'onHideBrowserChrome', 'onHidePerformanceOverlay', 'onNewTab',

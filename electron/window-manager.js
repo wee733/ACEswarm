@@ -361,7 +361,7 @@ document.getElementById('application-launcher').onclick = event => {
 
 function renderApplicationsMenu() {
   const menu = document.getElementById('applications-menu');
-  const signature = JSON.stringify([installedApplications, favorites, defaultUrl, storeUrl]);
+  const signature = JSON.stringify([installedApplications, favorites, defaultUrl, storeUrl, document.documentElement.lang]);
   if (menu.dataset.signature === signature) return;
   menu.dataset.signature = signature;
   const expanded = document.getElementById('all-applications')?.open ?? true;

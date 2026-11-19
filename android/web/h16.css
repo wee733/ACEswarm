@@ -1,9 +1,14 @@
 /* The H16 WebView predates CSS Grid, flex gap, inset and CSS min(). */
 .shell { --panel-height: 44px; }
 .desktop-bar { padding: 0 8px; }
+.desktop-bar > * + * { margin-left: 6px; }
 .desktop-bar .system-button,
 .desktop-actions .icon-button { height: 40px; }
 .desktop-actions .icon-button { width: 38px; }
+.desktop-actions > * + * { margin-left: 4px; }
+.dock-collapsed .dock-item,
+.dock-collapsed .window-task { height: 36px; padding: 0 10px; }
+.dock-items > * + * { margin-left: 4px; }
 .appearance-setting select { margin-left: 10px; }
 .system-button img, .tools-menu button svg, .application-menu-row .app-icon {
   margin-right: 6px;

@@ -6,13 +6,15 @@
         android:allowBackup="false" android:usesCleartextTraffic="true"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
         <activity android:name=".WorkbenchActivity" android:exported="true"
-            android:launchMode="singleTop" android:screenOrientation="sensorLandscape">
+            android:launchMode="singleTop" android:screenOrientation="sensorLandscape"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard|navigation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
         <activity android:name=".PageActivity" android:exported="false"
-            android:screenOrientation="sensorLandscape"/>
+            android:launchMode="singleTop" android:screenOrientation="sensorLandscape"
+            android:configChanges="orientation|screenSize|keyboardHidden|keyboard|navigation"/>
     </application>
 </manifest>

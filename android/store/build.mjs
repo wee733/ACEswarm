@@ -5,6 +5,12 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
+function replaceRequired(source, pattern, replacement, label) {
+  const next = source.replace(pattern, replacement);
+  if (next === source) throw new Error(`Expected ${label} in AppStore index.html`);
+  return next;
+}
+
 const here = path.dirname(fileURLToPath(import.meta.url));
 const ui = path.resolve(here, '../../aivudaAppStore/aivudaappstore/resources/ui');
 const target = path.resolve(process.argv[2], 'store');
@@ -45,12 +51,13 @@ const { transform } = upstream('lightningcss');
 const compiled = transform({ filename: 'workbench.css', code: Buffer.from(styles.toString()),
   targets: { chrome: 52 << 16 }, minify: true }).code.toString();
 const css = postcss.parse(compiled);
-css.walkDecls(/^(margin|padding)-(inline|block)$/, declaration => {
+css.walkDecls(/^(margin|padding|inset)-(inline|block)$/, declaration => {
   const [property, axis] = declaration.prop.split('-');
   const [first, second] = postcss.list.space(declaration.value);
   const sides = axis === 'inline' ? ['left', 'right'] : ['top', 'bottom'];
-  declaration.cloneBefore({ prop: property + '-' + sides[0], value: first });
-  declaration.cloneBefore({ prop: property + '-' + sides[1], value: second || first });
+  const prefix = property === 'inset' ? '' : property + '-';
+  declaration.cloneBefore({ prop: prefix + sides[0], value: first });
+  declaration.cloneBefore({ prop: prefix + sides[1], value: second || first });
 });
 css.walkDecls('gap', declaration => {
   declaration.cloneBefore({ prop: '--ace-h16-gap' });
@@ -64,8 +71,13 @@ css.walkRules(rule => {
 });
 await fs.writeFile(stylePath, css.toString() + '\n' + await fs.readFile(path.join(here, 'h16.css'), 'utf8'));
 
-const html = (await fs.readFile(path.join(ui, 'index.html'), 'utf8'))
-  .replace(/<link\b[^>]*fonts\.(?:googleapis|gstatic)[^>]*>/gs, '')
-  .replace('</head>', '<link rel="stylesheet" href="/_aceswarm_store/workbench.css"></head>')
-  .replace('<script type="module" src="/src/main.js"></script>', '<script src="/_aceswarm_store/workbench.js"></script>');
+let html = (await fs.readFile(path.join(ui, 'index.html'), 'utf8'))
+  .replace(/<link\b[^>]*fonts\.(?:googleapis|gstatic)[^>]*>/gs, '');
+html = replaceRequired(html, '</head>', '<link rel="stylesheet" href="/_aceswarm_store/workbench.css"></head>', '</head> tag');
+html = replaceRequired(
+  html,
+  '<script type="module" src="/src/main.js"></script>',
+  '<script src="/_aceswarm_store/workbench.js"></script>',
+  'main.js module script tag',
+);
 await fs.writeFile(path.join(target, 'index.html'), html);

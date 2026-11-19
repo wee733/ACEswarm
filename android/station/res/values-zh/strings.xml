@@ -7,4 +7,8 @@
     <string name="page_failed">无法打开此页面。</string>
     <string name="downloads_unavailable">此设备无法打开下载列表。</string>
     <string name="download_started">已开始下载</string>
+    <string name="download_unsupported">此页面暂不支持该下载方式。</string>
+    <string name="ssl_error">安全证书无效，已阻止加载此页面。</string>
+    <string name="clear_data_confirm">清除 ACEswarm 浏览数据？将退出网页账号并清除收藏、最近应用与网页缓存。</string>
+    <string name="clear_data_action">清除</string>
 </resources>

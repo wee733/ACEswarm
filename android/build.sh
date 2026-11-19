@@ -8,6 +8,12 @@ tools="$sdk/build-tools/34.0.0"
 platform="$sdk/platforms/android-29/android.jar"
 output="$PWD/android/build"
 key="${ACESWARM_SIGNING_KEY:-${XDG_DATA_HOME:-$HOME/.local/share}/aceswarm-android/development.p12}"
+for cmd in node npm javac jar keytool; do
+    if ! command -v "$cmd" >/dev/null 2>&1; then
+        echo "Missing required build tool: $cmd" >&2
+        exit 1
+    fi
+done
 for exe in aapt d8 zipalign apksigner; do
     if [[ ! -x "$tools/$exe" ]]; then
         echo "Install Android SDK Build Tools 34.0.0 and set ANDROID_SDK_ROOT." >&2

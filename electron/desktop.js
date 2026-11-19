@@ -106,7 +106,7 @@ function openDockMenu(event, entry) {
     menu.append(button);
   };
   command(entry.windows.length ? "Activate" : "Open", () => entry.windows.length ? activateTab(entry.windows.at(-1).id) : openApplication(entry.url));
-  command("New window", () => createTab(entry.url));
+  if (!window.aivudaShell.openOnDevice) command("New window", () => createTab(entry.url));
   if (!entry.builtin) {
     command(entry.pinned ? "Remove from Favorites" : "Add to Favorites", () => {
       if (entry.pinned) {
@@ -134,7 +134,8 @@ function openDockMenu(event, entry) {
   menu.style.left = Math.max(8, Math.min(event.clientX, innerWidth - menu.offsetWidth - 8)) + "px";
   setToolsMenuOpen(false);
   setWindowMenuOpen(false);
-  menu.style.top = Math.max(8, Math.min(event.clientY - menu.offsetHeight - 8, innerHeight - 28 - menu.offsetHeight - 5)) + "px";
+  const panelHeight = document.querySelector(".desktop-bar")?.offsetHeight || 28;
+  menu.style.top = Math.max(8, Math.min(event.clientY - menu.offsetHeight - 8, innerHeight - panelHeight - menu.offsetHeight - 5)) + "px";
   menu.querySelector("button")?.focus();
 }
 

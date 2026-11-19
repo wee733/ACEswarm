@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.DownloadManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -14,18 +15,19 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.util.LruCache;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.JavascriptInterface;
 import android.webkit.CookieManager;
-import android.webkit.WebStorage;
-import android.webkit.WebViewDatabase;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebResourceResponse;
 import android.webkit.WebSettings;
+import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebViewDatabase;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -47,6 +49,10 @@ public class WorkbenchActivity extends Activity {
     static final String ORIGIN = "https://" + HOST;
     private WebView desktop;
     private AlertDialog quitDialog;
+    private AlertDialog clearDialog;
+    private final LruCache<String, byte[]> iconCache = new LruCache<String, byte[]>(4 * 1024 * 1024) {
+        @Override protected int sizeOf(String key, byte[] value) { return value.length; }
+    };
 
     @Override protected void onCreate(Bundle state) {
         super.onCreate(state);
@@ -59,6 +65,7 @@ public class WorkbenchActivity extends Activity {
         // Only this WebView hosts a bridge. The asset handler blocks all external resources.
         desktop.addJavascriptInterface(new Device(), "AceAndroid");
         setContentView(desktop);
+        applyFullscreen(this);
         desktop.loadUrl(ORIGIN + "/shell.html");
     }
 
@@ -72,6 +79,18 @@ public class WorkbenchActivity extends Activity {
         settings.setAllowUniversalAccessFromFileURLs(false);
         settings.setTextZoom(100);
         settings.setUseWideViewPort(true);
+    }
+
+    static boolean isFullscreen(Context context) {
+        return context.getSharedPreferences("workbench", MODE_PRIVATE).getBoolean("fullscreen", false);
+    }
+
+    static void applyFullscreen(Activity activity) {
+        View decor = activity.getWindow().getDecorView();
+        decor.setSystemUiVisibility(isFullscreen(activity)
+            ? View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            : View.SYSTEM_UI_FLAG_VISIBLE);
     }
 
     private final class Assets extends WebViewClient {
@@ -90,16 +109,23 @@ public class WorkbenchActivity extends Activity {
                     || (req.isForMainFrame() && !"/shell.html".equals(path))) return missing();
             if (path.startsWith("/icons/") && path.endsWith(".png")) {
                 String id = path.substring(7, path.length() - 4);
+                byte[] cached = iconCache.get(id);
+                if (cached != null) {
+                    return new WebResourceResponse("image/png", null, new ByteArrayInputStream(cached));
+                }
                 try {
-                    Drawable icon = getPackageManager().getApplicationIcon(id);
+                    Drawable raw = getPackageManager().getApplicationIcon(id);
+                    Drawable.ConstantState constant = raw.getConstantState();
+                    Drawable icon = constant != null ? constant.newDrawable(getResources()).mutate() : raw.mutate();
                     Bitmap bitmap = Bitmap.createBitmap(72, 72, Bitmap.Config.ARGB_8888);
                     icon.setBounds(0, 0, bitmap.getWidth(), bitmap.getHeight());
                     icon.draw(new Canvas(bitmap));
                     ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, bytes);
                     bitmap.recycle();
-                    return new WebResourceResponse("image/png", null,
-                        new ByteArrayInputStream(bytes.toByteArray()));
+                    byte[] encoded = bytes.toByteArray();
+                    iconCache.put(id, encoded);
+                    return new WebResourceResponse("image/png", null, new ByteArrayInputStream(encoded));
                 } catch (PackageManager.NameNotFoundException | RuntimeException unavailable) { return missing(); }
             }
             try {
@@ -169,26 +195,8 @@ public class WorkbenchActivity extends Activity {
                 getSharedPreferences("workbench", MODE_PRIVATE).edit().putString(key, value).apply();
             }
         }
-        @JavascriptInterface public void clearBrowserData() {
-            runOnUiThread(() -> {
-                SharedPreferences browser = getSharedPreferences("browser", MODE_PRIVATE);
-                browser.edit().putLong("generation", browser.getLong("generation", 0) + 1).apply();
-                PageActivity.clearSessions();
-                desktop.clearHistory();
-                desktop.clearCache(true);
-                desktop.clearFormData();
-                desktop.clearSslPreferences();
-                WebViewDatabase database = WebViewDatabase.getInstance(WorkbenchActivity.this);
-                database.clearFormData();
-                database.clearHttpAuthUsernamePassword();
-                WebStorage.getInstance().deleteAllData();
-                CookieManager cookies = CookieManager.getInstance();
-                cookies.removeAllCookies(removed -> {
-                    cookies.flush();
-                    if (!isDestroyed()) desktop.evaluateJavascript(
-                        "if (window.aceAndroidDataCleared) window.aceAndroidDataCleared()", null);
-                });
-            });
+        @JavascriptInterface public void clearBrowserData(String message, String confirmLabel, String cancelLabel) {
+            runOnUiThread(() -> confirmClearBrowserData(message, confirmLabel, cancelLabel));
         }
         @JavascriptInterface public String locale() {
             return getResources().getConfiguration().getLocales().get(0).toLanguageTag();
@@ -201,13 +209,63 @@ public class WorkbenchActivity extends Activity {
         }
         @JavascriptInterface public void fullscreen() {
             runOnUiThread(() -> {
-                View decor = getWindow().getDecorView();
-                boolean visible = (decor.getSystemUiVisibility() & View.SYSTEM_UI_FLAG_FULLSCREEN) == 0;
-                decor.setSystemUiVisibility(visible ? View.SYSTEM_UI_FLAG_FULLSCREEN
-                    | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY : 0);
+                boolean next = !isFullscreen(WorkbenchActivity.this);
+                getSharedPreferences("workbench", MODE_PRIVATE).edit().putBoolean("fullscreen", next).apply();
+                applyFullscreen(WorkbenchActivity.this);
             });
         }
         @JavascriptInterface public void quit() { runOnUiThread(() -> confirmQuit()); }
+    }
+
+    private void notifyDataCleared(boolean cleared) {
+        if (!isDestroyed()) {
+            desktop.evaluateJavascript(
+                "if (window.aceAndroidDataCleared) window.aceAndroidDataCleared(" + cleared + ")", null);
+        }
+    }
+
+    private void confirmClearBrowserData(String message, String confirmLabel, String cancelLabel) {
+        if (isFinishing() || (clearDialog != null && clearDialog.isShowing())) {
+            notifyDataCleared(false);
+            return;
+        }
+        CharSequence prompt = (message != null && !message.isEmpty()) ? message : getString(R.string.clear_data_confirm);
+        CharSequence positive = (confirmLabel != null && !confirmLabel.isEmpty()) ? confirmLabel : getString(R.string.clear_data_action);
+        CharSequence negative = (cancelLabel != null && !cancelLabel.isEmpty()) ? cancelLabel : getString(android.R.string.cancel);
+        final boolean[] confirmed = { false };
+        clearDialog = new AlertDialog.Builder(this)
+            .setMessage(prompt)
+            .setNegativeButton(negative, null)
+            .setPositiveButton(positive, (dialog, which) -> {
+                confirmed[0] = true;
+                performClearBrowserData();
+            })
+            .setOnDismissListener(dialog -> {
+                clearDialog = null;
+                applyFullscreen(this);
+                if (!confirmed[0]) notifyDataCleared(false);
+            })
+            .show();
+    }
+
+    private void performClearBrowserData() {
+        SharedPreferences browser = getSharedPreferences("browser", MODE_PRIVATE);
+        browser.edit().putLong("generation", browser.getLong("generation", 0) + 1).apply();
+        iconCache.evictAll();
+        PageActivity.clearSessions();
+        desktop.clearHistory();
+        desktop.clearCache(true);
+        desktop.clearFormData();
+        desktop.clearSslPreferences();
+        WebViewDatabase database = WebViewDatabase.getInstance(this);
+        database.clearFormData();
+        database.clearHttpAuthUsernamePassword();
+        WebStorage.getInstance().deleteAllData();
+        CookieManager cookies = CookieManager.getInstance();
+        cookies.removeAllCookies(removed -> {
+            cookies.flush();
+            notifyDataCleared(true);
+        });
     }
 
     private void notifyUser(int message) { Toast.makeText(this, message, Toast.LENGTH_SHORT).show(); }
@@ -222,7 +280,17 @@ public class WorkbenchActivity extends Activity {
                     if (task.getTaskInfo().id == getTaskId()) { task.finishAndRemoveTask(); return; }
                 }
                 finishAffinity();
-            }).show();
+            })
+            .setOnDismissListener(dialog -> {
+                quitDialog = null;
+                applyFullscreen(this);
+            })
+            .show();
+    }
+
+    @Override public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) applyFullscreen(this);
     }
 
     @Override public void onBackPressed() {
@@ -232,11 +300,14 @@ public class WorkbenchActivity extends Activity {
     @Override protected void onPause() { desktop.onPause(); super.onPause(); }
     @Override protected void onResume() {
         super.onResume();
+        applyFullscreen(this);
         desktop.onResume();
         desktop.evaluateJavascript("if (typeof window.aceAndroidResume === 'function') window.aceAndroidResume()", null);
     }
     @Override protected void onDestroy() {
         if (quitDialog != null) quitDialog.dismiss();
+        if (clearDialog != null) clearDialog.dismiss();
+        iconCache.evictAll();
         desktop.removeJavascriptInterface("AceAndroid");
         dispose(desktop);
         super.onDestroy();
