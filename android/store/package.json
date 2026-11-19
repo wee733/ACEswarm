@@ -1,0 +1,8 @@
+{
+  "name": "aceswarm-h16-store",
+  "private": true,
+  "version": "0.1.0",
+  "dependencies": {
+    "core-js": "3.49.0"
+  }
+}

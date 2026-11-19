@@ -5,6 +5,10 @@ It provides a local application gateway, a local AppStore, and a runtime environ
 
 ![img](misc/img1.png)
 
+## Android H16
+
+The H16 Android port reuses the workbench interface and starts applications installed on the controller, including QGroundControl and NoMachine. See the [H16 build and usage guide](android/README.md).
+
 ## Download
 
 Download the Linux x86_64 AppImage (tested on Ubuntu 22.04; higher versions should work):

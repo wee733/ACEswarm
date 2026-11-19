@@ -40,7 +40,8 @@ function applicationIcon(entry) {
 
 function applicationEntries() {
   const entries = new Map();
-  for (const entry of [{ url: defaultUrl, title: "Console", builtin: true }, { url: storeUrl, title: "AppStore Admin", builtin: true }, ...favorites]) {
+  const builtin = (url, title) => ({ url, title: window.aivudaShell.builtinTitle?.(title) || title, builtin: true });
+  for (const entry of [builtin(defaultUrl, "Console"), builtin(storeUrl, "AppStore Admin"), ...favorites]) {
     if (!entry.url) continue;
     const key = desktopState.appKey(entry.url);
     if (!entries.has(key)) entries.set(key, { ...entry, title: entry.title || getSiteNameFromUrl(entry.url), key, pinned: true, windows: [] });

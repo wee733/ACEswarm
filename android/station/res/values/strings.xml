@@ -1,0 +1,10 @@
+<resources>
+    <string name="unavailable">This app is unavailable.</string>
+    <string name="quit_workbench">Quit ACEswarm?</string>
+    <string name="quit">Quit</string>
+    <string name="desktop">Desktop</string>
+    <string name="reload">Reload</string>
+    <string name="page_failed">Could not open this page.</string>
+    <string name="downloads_unavailable">Downloads are unavailable on this device.</string>
+    <string name="download_started">Download started</string>
+</resources>

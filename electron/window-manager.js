@@ -206,6 +206,7 @@ function startOuterWindowGesture(event, owner, edge = '') {
 }
 
 function renderWindowTasks(items) {
+  if (window.aivudaShell.renderDeviceTasks) return window.aivudaShell.renderDeviceTasks(items);
   for (const owner of appWindows.values()) {
     const tab = tabs.get(owner.layout.activePanel?.id);
     const button = document.createElement('button');

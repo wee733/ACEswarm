@@ -1,0 +1,18 @@
+/* Chromium 52 lacks grid, flex gap, inset, and min() widths. */
+@supports not (inset: 0) {
+  .grid { display: flex; flex-wrap: wrap; }
+  .grid.place-items-center { align-items: center; justify-content: center; }
+  .grid > * { min-width: 0; }
+  .min-h-screen { min-height: 100vh; }
+  section.place-items-center > div { width: 460px; max-width: 95vw; }
+  .inset-0, .bg-grid { left: 0; right: 0; top: 0; bottom: 0; }
+  svg { flex-shrink: 0; }
+  [class*="gap-"]:not(.flex-col) > * + * { margin-left: var(--ace-h16-gap); }
+  .flex-col[class*="gap-"] > * + * { margin-top: var(--ace-h16-gap); }
+  @media (min-width: 40rem) {
+    .sm\:flex-row[class*="gap-"] > * + * { margin-left: var(--ace-h16-gap); margin-top: 0; }
+  }
+  @media (min-width: 48rem) {
+    .md\:flex-row[class*="gap-"] > * + * { margin-left: var(--ace-h16-gap); margin-top: 0; }
+  }
+}

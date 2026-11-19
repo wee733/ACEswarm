@@ -55,8 +55,8 @@ function applyShellAppearance(value) {
   document.documentElement.dataset.theme = shellAppearance.resolvedTheme;
   document.documentElement.lang = shellAppearance.resolvedLanguage;
   const library = window['dockview-core'];
-  const theme = shellAppearance.resolvedTheme === 'dark' ? library.themeDark : library.themeLight;
   for (const owner of appWindows.values()) {
+    const theme = shellAppearance.resolvedTheme === 'dark' ? library.themeDark : library.themeLight;
     owner.layout.updateOptions({ theme });
     owner.popoverHost?.classList.remove(library.themeDark.className, library.themeLight.className);
     owner.popoverHost?.classList.add(theme.className);

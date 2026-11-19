@@ -11,3 +11,5 @@ resources/wheels.lock.generated
 *.log
 .smoke/
 .vscode
+
+/android/build/

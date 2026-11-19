@@ -1,0 +1,10 @@
+<resources>
+    <string name="unavailable">此应用无法打开。</string>
+    <string name="quit_workbench">退出 ACEswarm？</string>
+    <string name="quit">退出</string>
+    <string name="desktop">桌面</string>
+    <string name="reload">刷新</string>
+    <string name="page_failed">无法打开此页面。</string>
+    <string name="downloads_unavailable">此设备无法打开下载列表。</string>
+    <string name="download_started">已开始下载</string>
+</resources>

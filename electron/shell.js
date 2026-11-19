@@ -1442,6 +1442,7 @@ function toggleScreenRecordBar() {
 }
 
 function createTab(rawUrl, options = {}) {
+  if (window.aivudaShell.openOnDevice) return window.aivudaShell.openOnDevice(rawUrl);
   const id = options.id || `tab-${nextTabId}`;
   const numericId = Number(String(id).replace(/^tab-/, ""));
   if (Number.isFinite(numericId)) {
@@ -1690,8 +1691,8 @@ document.getElementById("tools-record")?.addEventListener("click", () => {
 });
 document.getElementById("tools-clear-data")?.addEventListener("click", async () => {
   setToolsMenuOpen(false);
-  await window.aivudaShell.clearBrowserData();
-  window.location.reload();
+  const result = await window.aivudaShell.clearBrowserData();
+  if (result?.ok) window.location.reload();
 });
 document.addEventListener("click", () => setToolsMenuOpen(false));
 
@@ -1790,8 +1791,8 @@ window.aivudaShell.onToggleScreenRecordBar(() => {
   toggleScreenRecordBar();
 });
 window.aivudaShell.onClearBrowserData(async () => {
-  await window.aivudaShell.clearBrowserData();
-  window.location.reload();
+  const result = await window.aivudaShell.clearBrowserData();
+  if (result?.ok) window.location.reload();
 });
 
 window.addEventListener("pagehide", () => {
