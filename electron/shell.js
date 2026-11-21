@@ -17,6 +17,8 @@ const dockCollapsed = true;
 let desktopVisible = false;
 let desktopActiveTabId = null;
 let favorites = [];
+const recentPageLimit = 5;
+let recentPages = [];
 let activeTabId = null;
 let nextTabId = 1;
 let performanceOverlayVisible = false;
@@ -185,6 +187,7 @@ function buildShellStatePayload() {
     screenRecordMode,
     screenRecordBarPosition,
     favorites,
+    recentPages,
     tabs: Array.from(tabs.values()).map((tab) => ({
       id: tab.id,
       windowId: tab.windowId,
@@ -1690,8 +1693,7 @@ document.getElementById("tools-record")?.addEventListener("click", () => {
 });
 document.getElementById("tools-clear-data")?.addEventListener("click", async () => {
   setToolsMenuOpen(false);
-  await window.aivudaShell.clearBrowserData();
-  window.location.reload();
+  await clearBrowserDataAndReload();
 });
 document.addEventListener("click", () => setToolsMenuOpen(false));
 
@@ -1789,10 +1791,12 @@ window.aivudaShell.onTogglePerformanceOverlay(() => {
 window.aivudaShell.onToggleScreenRecordBar(() => {
   toggleScreenRecordBar();
 });
-window.aivudaShell.onClearBrowserData(async () => {
+async function clearBrowserDataAndReload() {
   await window.aivudaShell.clearBrowserData();
+  recentPages = [];
   window.location.reload();
-});
+}
+window.aivudaShell.onClearBrowserData(clearBrowserDataAndReload);
 
 window.addEventListener("pagehide", () => {
   writeShellState();
@@ -1824,6 +1828,10 @@ window.aivudaShell.getStartup().then(startup => {
   const saved = normalizeSavedShellState(startup.savedState);
   if (saved) {
     favorites = saved.favorites;
+    if (Array.isArray(raw.recentPages)) {
+      const urls = raw.recentPages.filter(url => typeof url === 'string' && /^https?:\/\//.test(url));
+      recentPages = [...new Set(urls.map(remap))].slice(0, recentPageLimit);
+    }
     performanceOverlayVisible = saved.performanceOverlayVisible;
     screenRecordBarVisible = saved.screenRecordBarVisible;
     screenRecordMode = saved.screenRecordMode;

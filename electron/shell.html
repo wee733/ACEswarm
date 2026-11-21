@@ -101,6 +101,10 @@
       <div class="dialog-heading"><h2>Open page</h2><button id="close-page-dialog" class="icon-button" type="button" title="Close" aria-label="Close"><i data-lucide="x"></i></button></div>
       <label for="open-page-url">Address</label>
       <input id="open-page-url" type="text" placeholder="https:// or robot address" required autocomplete="off" />
+      <section id="recent-pages" aria-labelledby="recent-pages-heading" hidden>
+        <h3 id="recent-pages-heading">Recent pages</h3>
+        <div id="recent-page-list"></div>
+      </section>
       <p id="open-page-error" role="alert" hidden></p>
       <div class="dialog-actions"><button id="open-home" type="button">Console</button><button id="open-store" type="button">AppStore Admin</button><button class="primary" type="submit">Open</button></div>
     </form>

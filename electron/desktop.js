@@ -366,6 +366,20 @@ function showOpenPageDialog(windowId = activeWindowId) {
   pendingWindowId = typeof windowId === 'string' ? windowId : activeWindowId;
   const dialog = document.getElementById("open-page-dialog");
   document.getElementById("open-page-error").hidden = true;
+  const list = document.getElementById("recent-page-list");
+  list.replaceChildren();
+  for (const url of recentPages) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = url;
+    button.title = url;
+    button.onclick = () => {
+      document.getElementById("open-page-url").value = url;
+      document.getElementById("open-page-form").requestSubmit();
+    };
+    list.append(button);
+  }
+  document.getElementById("recent-pages").hidden = !recentPages.length;
   dialog.showModal();
   document.getElementById("open-page-url").focus();
 }
@@ -388,6 +402,8 @@ document.getElementById("open-page-form").onsubmit = async (event) => {
     document.getElementById("open-page-dialog").close();
     createTab(url, { windowId: pendingWindowId });
     pendingWindowId = null;
+    recentPages = [url, ...recentPages.filter(previous => previous !== url)].slice(0, recentPageLimit);
+    writeShellState();
   } catch (error) {
     const message = document.getElementById("open-page-error");
     message.textContent = error.message; message.hidden = false;

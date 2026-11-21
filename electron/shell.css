@@ -184,6 +184,10 @@ dialog::backdrop { background: #1b302940; }
 .dialog-heading h2 { font-size: 18px; margin: 0; }
 dialog label { display: block; font-size: 12px; margin-bottom: 7px; color: #5f716b; }
 dialog input { width: 100%; padding: 10px; border: 1px solid #b9c8c4; border-radius: 5px; font-size: 13px; }
+#recent-pages { margin-top: 16px; }
+#recent-pages h3 { margin: 0 0 5px; font-size: 12px; font-weight: 600; }
+#recent-page-list button { display: block; width: 100%; padding: 6px 8px; border: 0; border-radius: 4px; background: transparent; color: inherit; text-align: left; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+#recent-page-list button:hover, #recent-page-list button:focus-visible { background: color-mix(in srgb, currentColor 10%, transparent); }
 .dialog-actions { display: flex; gap: 8px; margin-top: 22px; }
 .dialog-actions button { border: 1px solid #c9d5d1; border-radius: 5px; padding: 8px 14px; background: white; color: #435c55; font-size: 12px; }
 .dialog-actions .primary { margin-left: auto; background: #267761; border-color: #267761; color: white; }

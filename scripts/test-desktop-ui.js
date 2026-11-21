@@ -353,9 +353,11 @@ async function run() {
   await contextMenu.getByRole('menuitem', { name: 'Close', exact: true }).click();
   await page.waitForFunction(id => !tabs.has(id), childId);
   await page.locator('.app-window[data-window-id="' + secondWindow + '"] button[aria-label="Open tab"]').click();
-  await page.locator('#open-page-url').fill(robotUrl + '/child');
-  await page.locator('#open-page-form button[type="submit"]').click();
+  const recentButtons = page.locator('#recent-page-list button');
+  assert.deepEqual(await recentButtons.allTextContents(), [robotUrl + '/child', retryUrl, tlsUrl]);
+  await recentButtons.first().click();
   await page.waitForFunction(() => getActiveTab()?.ready && getActiveTab().title === 'Child');
+  assert.deepEqual(await page.evaluate(() => buildShellStatePayload().recentPages), [robotUrl + '/child', retryUrl, tlsUrl]);
   childId = await page.evaluate(() => activeTabId);
   assert.equal(await page.evaluate(() => appWindows.size), 2);
   assert.equal(await page.evaluate(id => appWindows.get(id).layout.panels.length, secondWindow), 2);
