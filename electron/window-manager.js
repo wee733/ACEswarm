@@ -104,10 +104,22 @@ function disposeEmptyWindow(owner) {
   }
 }
 
-function closeOuterWindow(owner) {
+async function closeOuterWindow(owner) {
   if (!owner) return;
-  for (const tab of [...tabs.values()]) if (tab.windowId === owner.id) removeApplicationWindow(tab);
-  renderDesktop(); writeShellState();
+  const pages = [...tabs.values()].filter(tab => tab.windowId === owner.id);
+  if (pages.length > 1) {
+    const dialog = document.getElementById('close-window-dialog');
+    if (dialog.open) return;
+    document.getElementById('close-window-count').textContent = pages.length;
+    dialog.returnValue = 'cancel';
+    const closed = new Promise(resolve => dialog.addEventListener('close', resolve, { once: true }));
+    dialog.showModal();
+    await closed;
+    if (dialog.returnValue !== 'close') return;
+  }
+  for (const tab of pages) {
+    if (tabs.has(tab.id) && tab.windowId === owner.id) removeApplicationWindow(tab);
+  }
 }
 
 function moveTabToWindow(tab, targetId, placement = {}) {

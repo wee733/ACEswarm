@@ -15,6 +15,8 @@ const shellTranslations = {
   'Window controls': '窗口控制', 'Add to Favorites': '添加到收藏', 'Add to favorites': '添加到收藏',
   'Remove from Favorites': '取消收藏', 'Remove from favorites': '取消收藏', 'Move tab to window': '移动标签页到窗口',
   'Restore floating window': '恢复浮动窗口', 'Maximize or restore': '最大化或恢复', 'Minimize': '最小化',
+  'Close all pages in this window?': '关闭此窗口中的所有页面？', 'Number of open pages': '已打开的页面数',
+  'Cancel': '取消', 'Close all pages': '全部关闭',
   'Close tab': '关闭标签页', 'Close window': '关闭窗口', 'New window': '新窗口', 'Zoom in': '放大', 'Zoom out': '缩小',
   'Reset zoom': '重置缩放', 'Page zoom': '页面缩放', 'Left half': '左半屏', 'Right half': '右半屏',
   'Top half': '上半屏', 'Bottom half': '下半屏', 'Maximize window': '最大化窗口', 'Back': '后退', 'Forward': '前进',

@@ -445,6 +445,21 @@ async function run() {
   await page.mouse.move(blankHeader.x + blankHeader.width / 2 - 80, blankHeader.y + blankHeader.height / 2 + 45, { steps: 12 }); await page.mouse.up();
   assert.ok(await page.evaluate(({ id, x }) => appWindows.get(id).bounds.x < x, { id: duplicateWindow, x: duplicateBounds.x }));
   await page.locator('.app-window[data-window-id="' + duplicateWindow + '"] button[aria-label="Close window"]').click();
+  assert.equal(await page.evaluate(id => appWindows.has(id), duplicateWindow), false, 'A single-page window closes immediately');
+  const closeDialog = page.locator('#close-window-dialog');
+  const testWindow = await page.evaluate(() => {
+    const first = createTab(defaultUrl);
+    createTab(storeUrl, { windowId: first.windowId });
+    return first.windowId;
+  });
+  const closeButton = page.locator('.app-window[data-window-id="' + testWindow + '"] button[aria-label="Close window"]');
+  await closeButton.click();
+  assert.equal(await closeDialog.locator('#close-window-count').innerText(), '2');
+  await closeDialog.locator('[value="cancel"]').click();
+  assert.equal(await page.evaluate(id => appWindows.get(id).layout.panels.length, testWindow), 2);
+  await closeButton.click();
+  await closeDialog.locator('[value="close"]').click();
+  await page.waitForFunction(id => !appWindows.has(id), testWindow);
   await page.evaluate(id => activateTab(id), robotId);
   assert.equal(await page.locator('.app-window[data-window-id="' + firstWindow + '"] button[aria-label="Close window"]').count(), 1);
   const header = await page.locator('.app-window[data-window-id="' + firstWindow + '"] .dv-tabs-and-actions-container').first().boundingBox();
