@@ -454,7 +454,7 @@ async function run() {
   });
   const closeButton = page.locator('.app-window[data-window-id="' + testWindow + '"] button[aria-label="Close window"]');
   await closeButton.click();
-  assert.equal(await closeDialog.locator('#close-window-count').innerText(), '2');
+  assert.equal((await closeDialog.innerText()).replace(/\s+/g, ' ').trim(), 'Close all pages in this window? Cancel Close all pages');
   await closeDialog.locator('[value="cancel"]').click();
   assert.equal(await page.evaluate(id => appWindows.get(id).layout.panels.length, testWindow), 2);
   await closeButton.click();

@@ -110,7 +110,6 @@ async function closeOuterWindow(owner) {
   if (pages.length > 1) {
     const dialog = document.getElementById('close-window-dialog');
     if (dialog.open) return;
-    document.getElementById('close-window-count').textContent = pages.length;
     dialog.returnValue = 'cancel';
     const closed = new Promise(resolve => dialog.addEventListener('close', resolve, { once: true }));
     dialog.showModal();
