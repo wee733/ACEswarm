@@ -1,6 +1,7 @@
 [submodule "aivudaOS"]
 	path = aivudaOS
 	url = https://github.com/shupx/aivudaOS.git
+	branch = dev/jetson_ros2_deploy
 [submodule "aivudaAppStore"]
 	path = aivudaAppStore
 	url = https://github.com/shupx/aivudaAppStore.git

@@ -33,13 +33,22 @@ http://127.0.0.1:${storeGatewayPort} {
 ` : '';
   return `{\n  admin 127.0.0.1:${adminPort}\n}\n(aivudaos_common_route) {
   @api path /aivuda_os/api* /aivuda_os/mcp
+  @appEndpoint path_regexp ^/[^/]+/(api|ui)(/|$)
+  header @appEndpoint ?Cache-Control no-store
   route {
     handle @api {
       reverse_proxy 127.0.0.1:${osPort}
     }
     # BEGIN AIVUDA APP IMPORTS
     # END AIVUDA APP IMPORTS
+    respond @appEndpoint 404
     handle {
+      header {
+        Cache-Control no-store
+        match {
+          header Content-Type text/html*
+        }
+      }
       encode zstd gzip
       root * ${ui}
       try_files {path} /index.html
