@@ -83,7 +83,7 @@ config_schema_path: schema.yaml
 
 async function smokePackageMcps(endpoints) {
   for (const [name, url, expected, loginTool, loginArguments, tokenKey, meTool] of [
-    ['os', endpoints.osMcp, 53, 'login', { body: { username: 'admin', password: 'admin123' } }, 'access_token', 'me'],
+    ['os', endpoints.osMcp, 54, 'login', { body: { username: 'admin', password: 'admin123' } }, 'access_token', 'me'],
     ['store', endpoints.storeMcp, 33, 'dev_login', { username: 'admin', password: 'admin123' }, 'access_token', 'dev_me'],
   ]) {
     const accessToken = name === 'store' ? process.env.AIVUDAAPPSTORE_MCP_ACCESS_TOKEN : undefined;
@@ -96,6 +96,7 @@ async function smokePackageMcps(endpoints) {
       await client.ping();
       const { tools } = await client.listTools();
       assert.equal(tools.length, expected, `${name} API coverage`);
+      if (name === 'os') assert.ok(tools.some(tool => tool.name === 'put_config'), 'System parameter updates are available');
       const automaticMe = await client.callTool({ name: meTool, arguments: {} });
       assert.ok(!automaticMe.isError, automaticMe.content?.[0]?.text);
       const automaticIdentity = JSON.parse(automaticMe.content[0].text);
