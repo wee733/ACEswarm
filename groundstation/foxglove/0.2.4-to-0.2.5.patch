@@ -1,0 +1,919 @@
+--- a/backend/visualize_foxglove_server/visualizer_rotor.py
++++ b/backend/visualize_foxglove_server/visualizer_rotor.py
+@@ -8,13 +8,15 @@
+ import threading
+ import time
+ from collections import deque
++from functools import partial
+ from dataclasses import dataclass, field
+ from typing import Any
+ 
+ import foxglove
+-import zenoh_grpc
++import zenoh
+ from foxglove.messages import (
+     Color,
++    Duration,
+     FrameTransform,
+     FrameTransforms,
+     KeyValuePair,
+@@ -294,32 +296,23 @@
+     return decoded if isinstance(decoded, dict) else None
+ 
+ 
+-def timestamp_from_ms(ts_ms: Any, fallback: float) -> Timestamp:
+-    try:
+-        return Timestamp.from_epoch_secs(float(ts_ms) / 1000.0)
+-    except (TypeError, ValueError):
+-        return Timestamp.from_epoch_secs(fallback)
+-
+-
+-def vector3_from_dict(value: Any, default_z: float = 0.0) -> Vec3:
+-    if not isinstance(value, dict):
+-        return Vec3(x=0.0, y=0.0, z=default_z)
+-    return Vec3(
+-        x=_float_value(value.get("x"), 0.0),
+-        y=_float_value(value.get("y"), 0.0),
+-        z=_float_value(value.get("z"), default_z),
+-    )
+-
+-
+-def quaternion_from_dict(value: Any) -> Quaternion:
+-    if not isinstance(value, dict):
+-        return Quaternion(x=0.0, y=0.0, z=0.0, w=1.0)
+-    return Quaternion(
+-        x=_float_value(value.get("x"), 0.0),
+-        y=_float_value(value.get("y"), 0.0),
+-        z=_float_value(value.get("z"), 0.0),
+-        w=_float_value(value.get("w"), 1.0),
+-    )
++def finite_fields(data: Any, fields: tuple[str, ...]) -> tuple[float, ...] | None:
++    if not isinstance(data, dict):
++        return None
++    values = tuple(data.get(key) for key in fields)
++    if any(type(v) not in (float, int) or not math.isfinite(v) for v in values):
++        return None
++    return values
++
++
++def current_quaternion(value: Any) -> Quaternion | None:
++    q = finite_fields(value, ("x", "y", "z", "w"))
++    if q is None:
++        return None
++    norm = math.hypot(*q)
++    if not math.isfinite(norm) or norm < 1e-8:
++        return None
++    return Quaternion(x=q[0]/norm, y=q[1]/norm, z=q[2]/norm, w=q[3]/norm)
+ 
+ 
+ def enu_from_gps(lat: float, lon: float, alt: float, origin: Any) -> Vec3:
+@@ -344,7 +337,7 @@
+ 
+ class RotorDroneVisualizer:
+     '''
+-    Visualizer for a single rotor drone, subscribing to telemetry via zenoh-grpc and publishing visualization data via the Foxglove SDK.
++    Visualizer for a single rotor drone, subscribing to telemetry via Zenoh and publishing visualization data via the Foxglove SDK.
+     '''
+     def __init__(self, config: RotorRobotConfig, runtime: Any) -> None:
+         self.config = config
+@@ -352,7 +345,8 @@
+         self.state: dict[str, Any] | None = None
+         self.local_pos: dict[str, Any] | None = None
+         self.gps: dict[str, Any] | None = None
+-        self.last_stamp = Timestamp.from_epoch_secs(time.time())
++        self.received: dict[str, float] = {}
++        self.last_history_sample: float | None = None
+         self.propeller_angles = [0.0, 0.5, 2.6, 1.4]
+         self.history: deque[tuple[float, Vec3]] = deque()
+         self.last_history_publish_time = 0.0
+@@ -366,6 +360,14 @@
+         data = envelope.get("data")
+         if not isinstance(data, dict):
+             return
++        sources = envelope.get("sources")
++        if not isinstance(sources, dict):
++            sources = {}
++        data = dict(data)
++        for source, field_name in (("pose", "position"), ("attitude", "orientation"), ("global", "global")):
++            info = sources.get(source)
++            if isinstance(info, dict) and info.get("fresh") is False:
++                data[field_name] = None
+         with self.lock:
+             if stream == "state":
+                 self.state = data
+@@ -373,7 +375,7 @@
+                 self.local_pos = data
+             elif stream == "gps":
+                 self.gps = data
+-            self.last_stamp = timestamp_from_ms(envelope.get("ts_ms"), time.time())
++            self.received[stream] = time.monotonic()
+ 
+     def update_runtime(self, runtime: Any) -> None:
+         with self.lock:
+@@ -381,6 +383,7 @@
+             self.runtime = runtime
+             if self._coordinate_runtime_changed(previous, runtime):
+                 self.history.clear()
++                self.last_history_sample = None
+                 self.last_history_publish_time = 0.0
+ 
+     def _coordinate_runtime_changed(self, previous: Any, current: Any) -> bool:
+@@ -395,57 +398,54 @@
+         )
+ 
+     def publish(self, now: float, dt: float, history_publish_rate_hz: float) -> None:
++        received_now = time.monotonic()
+         with self.lock:
+-            local_pos = dict(self.local_pos or {})
+-            gps = dict(self.gps or {})
+-            state = dict(self.state or {})
++            local_pos = self.local_pos if received_now - self.received.get("local_pos", -math.inf) <= 0.5 else None
++            gps = self.gps if received_now - self.received.get("gps", -math.inf) <= 2.0 else None
++            state = self.state if received_now - self.received.get("state", -math.inf) <= 2.5 else None
+             runtime = self.runtime
+-
+-        position, orientation, pose_valid = self._current_pose(local_pos, gps, runtime)
+-        if not pose_valid:
+-            return
+-
++            pose = self._current_pose(local_pos or {}, gps or {}, runtime)
++            if pose is None:
++                self.history.clear()
++                self.last_history_sample = None
++                return
++            position, orientation = pose
++            sample_time = self.received["gps" if runtime.position_source == "gps" else "local_pos"]
++            if self.last_history_sample != sample_time:
++                self._update_history(sample_time, position, runtime)
++                self.last_history_sample = sample_time
++            history = list(self.history)
++
++        # Use station time for TF, scene and path when remote clocks disagree.
+         stamp = Timestamp.from_epoch_secs(now)
+-        pose = Pose(position=position.to_msg(), orientation=orientation)
++        state = state or {}
+         self._update_propeller_angles(state, dt)
+-        self._publish_pose(stamp, pose)
++        self._publish_pose(stamp, Pose(position=position.to_msg(), orientation=orientation))
+         self._publish_tf(stamp, position, orientation)
+         self._publish_robot_scene(stamp, state, runtime)
+         self._publish_gps_origin(stamp, runtime)
+-        self._update_history(now, position, runtime)
+-        if now - self.last_history_publish_time >= 1.0 / max(history_publish_rate_hz, 0.1):
+-            self._publish_history(stamp, runtime)
+-            self.last_history_publish_time = now
++        if received_now - self.last_history_publish_time >= 1.0 / max(history_publish_rate_hz, 0.1):
++            self._publish_history(stamp, runtime, history)
++            self.last_history_publish_time = received_now
+ 
+     def _current_pose(
+         self,
+         local_pos: dict[str, Any],
+         gps: dict[str, Any],
+-        runtime: Any,
+-    ) -> tuple[Vec3, Quaternion, bool]:
+-        orientation = quaternion_from_dict(local_pos.get("orientation"))
+-        position_source = runtime.position_source.lower()
+-        if position_source == "gps":
+-            global_fix = gps.get("global") if isinstance(gps.get("global"), dict) else {}
+-            lat = global_fix.get("lat")
+-            lon = global_fix.get("lon")
+-            alt = global_fix.get("alt")
+-            if lat is None or lon is None:
+-                return Vec3(), orientation, False
+-            local_position = vector3_from_dict(local_pos.get("position"))
+-            gps_position = enu_from_gps(
+-                _float_value(lat, 0.0),
+-                _float_value(lon, 0.0),
+-                _float_value(alt, runtime.gps_origin.altitude),
+-                runtime.gps_origin,
+-            )
+-            if local_pos:
+-                return Vec3(x=gps_position.x, y=gps_position.y, z=local_position.z), orientation, True
+-            return gps_position, orientation, True
+-
+-        if not local_pos:
+-            return Vec3(), orientation, False
+-        return vector3_from_dict(local_pos.get("position")), orientation, True
++        runtime: RotorDisplayRuntime,
++    ) -> tuple[Vec3, Quaternion] | None:
++        orientation = current_quaternion(local_pos.get("orientation"))
++        if orientation is None:
++            return None
++        if runtime.position_source == "gps":
++            fix = finite_fields(gps.get("global"), ("lat", "lon", "alt"))
++            if fix is None or abs(fix[0]) > 90 or abs(fix[1]) > 180:
++                return None
++            return enu_from_gps(*fix, runtime.gps_origin), orientation
++        xyz = finite_fields(local_pos.get("position"), ("x", "y", "z"))
++        if xyz is None:
++            return None
++        return Vec3(*xyz), orientation
+ 
+     def _publish_pose(self, stamp: Timestamp, pose: Pose) -> None:
+         foxglove.log(
+@@ -481,7 +481,7 @@
+     def _publish_robot_scene(self, stamp: Timestamp, state: dict[str, Any], runtime: Any) -> None:
+         metadata = [
+             KeyValuePair(key="robot", value=self.config.name),
+-            KeyValuePair(key="armed", value=str(bool(state.get("armed", False))).lower()),
++            KeyValuePair(key="armed", value=str(state["armed"]).lower() if isinstance(state.get("armed"), bool) else "unknown"),
+         ]
+         propeller_models = []
+         for index, propeller in enumerate(self.config.propellers):
+@@ -507,6 +507,7 @@
+                         frame_id=self.config.base_frame_id,
+                         id=f"{self.config.name}/body",
+                         frame_locked=True,
++                        lifetime=Duration(sec=1),
+                         metadata=metadata,
+                         models=[
+                             ModelPrimitive(
+@@ -527,6 +528,7 @@
+                         frame_id=self.config.base_frame_id,
+                         id=f"{self.config.name}/propellers",
+                         frame_locked=True,
++                        lifetime=Duration(sec=1),
+                         metadata=metadata,
+                         models=propeller_models,
+                     ),
+@@ -535,6 +537,7 @@
+                         frame_id=self.config.base_frame_id,
+                         id=f"{self.config.name}/label",
+                         frame_locked=True,
++                        lifetime=Duration(sec=1),
+                         texts=[
+                             TextPrimitive(
+                                 pose=Pose(
+@@ -577,8 +580,8 @@
+         while self.history and self.history[0][0] < cutoff:
+             self.history.popleft()
+ 
+-    def _publish_history(self, stamp: Timestamp, runtime: Any) -> None:
+-        if len(self.history) < 2:
++    def _publish_history(self, stamp: Timestamp, runtime: Any, history: list[tuple[float, Vec3]]) -> None:
++        if len(history) < 2:
+             return
+         history_color = runtime.color.with_alpha(0.9)
+         foxglove.log(
+@@ -590,6 +593,7 @@
+                         frame_id=self.config.frame_id,
+                         id=f"{self.config.name}/history_path",
+                         frame_locked=True,
++                        lifetime=Duration(sec=1),
+                         lines=[
+                             LinePrimitive(
+                                 type=LinePrimitiveLineType.LineStrip,
+@@ -599,7 +603,7 @@
+                                 ),
+                                 thickness=1.0,
+                                 scale_invariant=True,
+-                                points=[point.to_point_msg() for _, point in self.history],
++                                points=[point.to_point_msg() for _, point in history],
+                                 color=history_color.to_msg(),
+                             )
+                         ],
+@@ -623,8 +627,13 @@
+         self._stop_event: threading.Event | None = None
+ 
+     def add_robot(self, name: str, metadata: dict[str, Any] | None = None) -> bool:
+-        if not name:
+-            logging.warning("cannot add rotor visualizer with empty name")
++        if not name or any(c in name for c in "/*$?#"):
++            logging.warning("invalid robot telemetry key segment: %r", name)
++            return False
++        try:
++            zenoh.KeyExpr(name)
++        except (TypeError, ValueError, zenoh.ZError):
++            logging.warning("invalid robot telemetry key: %r", name)
+             return False
+         with self._lock:
+             if name in self.visualizers:
+@@ -633,7 +642,13 @@
+             runtime = runtime_from_metadata(metadata)
+             visualizer = RotorDroneVisualizer(rotor_robot_config_from_name(name), runtime)
+             self.visualizers[name] = visualizer
+-            self._declare_robot_subscribers_locked(name)
++            try:
++                self._declare_robot_subscribers_locked(name)
++            except Exception:
++                self._undeclare_robot_subscribers_locked(name)
++                del self.visualizers[name]
++                logging.exception("failed to subscribe robot %s", name)
++                return False
+         logging.info("added rotor visualizer %s", name)
+         return True
+ 
+@@ -673,21 +688,13 @@
+         logging.info("removed rotor visualizer %s", name)
+         return True
+ 
+-    def handle_sample(self, sample: Any) -> None:
+-        key = str(sample.key_expr)
+-        parts = key.split("/")
+-        if len(parts) < 3:
++    @staticmethod
++    def handle_sample(visualizer: RotorDroneVisualizer, stream: str, sample: zenoh.Sample) -> None:
++        if sample.kind != zenoh.SampleKind.PUT:
+             return
+-        telemetry_prefix = parts[0]
+-        stream = parts[-1]
+-        with self._lock:
+-            visualizer = self.visualizers.get(telemetry_prefix)
+-        if visualizer is None or stream not in {"state", "local_pos", "gps"}:
+-            return
+-        envelope = decode_payload(sample.payload, getattr(sample, "encoding", None))
+-        if envelope is None:
+-            return
+-        visualizer.update_stream(stream, envelope)
++        envelope = decode_payload(sample.payload.to_bytes(), str(sample.encoding))
++        if envelope is not None:
++            visualizer.update_stream(stream, envelope)
+ 
+     def start(self, endpoint: str, stop_event: threading.Event) -> None:
+         self._stop_event = stop_event
+@@ -763,11 +770,10 @@
+         for key in self._robot_subscription_keys(name):
+             if key in self._subscribers:
+                 continue
+-            self._subscribers[key] = self._session.declare_subscriber(
+-                key,
+-                callback=self.handle_sample,
+-                allowed_origin=zenoh_grpc.Locality.ANY,
+-            )
++            # Capture this generation's visualizer so undeclare never waits for a
++            # callback that itself needs the manager's subscription lock.
++            callback = partial(self.handle_sample, self.visualizers[name], key.rsplit("/", 1)[1])
++            self._subscribers[key] = self._session.declare_subscriber(key, callback)
+             logging.info("subscribed rotor telemetry key %s", key)
+ 
+     def _undeclare_robot_subscribers_locked(self, name: str) -> None:
+@@ -782,28 +788,29 @@
+         self._subscribers.clear()
+ 
+     def _run_zenoh_until_stopped(self, endpoint: str, stop_event: threading.Event) -> None:
+-        try:
+-            with zenoh_grpc.Session.connect(endpoint) as session:
+-                with self._lock:
+-                    self._session = session
+-                    for name in list(self.visualizers):
+-                        self._declare_robot_subscribers_locked(name)
+-                while not stop_event.wait(0.5):
+-                    pass
+-        except Exception:
+-            logging.exception("zenoh-grpc telemetry subscription failed")
+-            stop_event.set()
+-        finally:
+-            with self._lock:
+-                self._undeclare_all_subscribers_locked()
+-                self._session = None
+-
+-
+-def close_subscriber(subscriber: Any) -> None:
+-    try:
+-        subscriber.undeclare()
+-    except AttributeError:
+-        try:
+-            subscriber.close()
+-        except AttributeError:
+-            pass
++        config = zenoh.Config()
++        if endpoint:
++            config.insert_json5("connect/endpoints", json.dumps([endpoint]))
++            config.insert_json5("scouting/multicast/enabled", "false")
++        while not stop_event.is_set():
++            try:
++                with zenoh.open(config) as session:
++                    try:
++                        with self._lock:
++                            self._session = session
++                            for name in self.visualizers:
++                                self._declare_robot_subscribers_locked(name)
++                        logging.info("Zenoh telemetry session open (%s)", endpoint or "LAN discovery")
++                        stop_event.wait()
++                    finally:
++                        with self._lock:
++                            self._undeclare_all_subscribers_locked()
++                            self._session = None
++            except Exception:
++                if not stop_event.is_set():
++                    logging.exception("Zenoh telemetry session failed; retrying")
++                    stop_event.wait(2)
++
++
++def close_subscriber(subscriber: zenoh.Subscriber) -> None:
++    subscriber.undeclare()
+--- a/backend/visualize_foxglove_server/foxglove_sdk_server.py
++++ b/backend/visualize_foxglove_server/foxglove_sdk_server.py
+@@ -2,7 +2,7 @@
+ """
+ Custom Foxglove SDK server for visualization topics.
+ 
+-This server subscribes to robot telemetry via zenoh-grpc and serves visualization assets and data to Foxglove Studio via the Foxglove SDK. 
++This server subscribes to robot telemetry via Zenoh and serves visualization assets and data to Foxglove Studio via the Foxglove SDK. 
+ 
+ A foxglove aggregator elsewhere combines this foxglove sdk server with the ROS foxglove bridge server to provide a unified address for Foxglove Studio to connect to.
+ """
+@@ -92,7 +92,8 @@
+         with path.open("r", encoding="utf-8") as f:
+             raw = yaml.safe_load(f) or {}
+ 
+-    visualize = _yaml_get(raw, "backend.visualize", {}) or {}
++    app = raw.get("foxglove_studio_embed", raw)
++    visualize = _yaml_get(app, "backend.visualize", {}) or {}
+     foxglove_sdk_server = (
+         visualize.get("foxglove_sdk_server", {}) if isinstance(visualize, dict) else {}
+     )
+@@ -106,23 +107,12 @@
+     return (
+         _str_value(foxglove_sdk_server.get("listen_host"), "127.0.0.1"),
+         _int_value(foxglove_sdk_server.get("listen_port"), 18767),
+-        _str_value(
+-            foxglove_sdk_server.get("zenoh_grpc_endpoint"),
+-            _str_value(_yaml_get(raw, "zenoh.plugins.grpc.uds_path"), "/tmp/zenoh-grpc.sock"),
+-        ),
++        _str_value(foxglove_sdk_server.get("zenoh_endpoint"), ""),
+         _str_value(display_control_api.get("listen_host"), "127.0.0.1"),
+         _int_value(display_control_api.get("listen_port"), 19287),
+         _float_value(display_control_api.get("idle_clear_delay_sec"), 3.0),
+         runtime,
+     )
+-
+-
+-def normalize_endpoint(value: str) -> str:
+-    if value.startswith(("unix://", "tcp://", "http://", "https://")):
+-        return value
+-    if value.startswith("/"):
+-        return f"unix://{value}"
+-    return value
+ 
+ 
+ def asset_handler(uri: str) -> bytes | None:
+@@ -229,7 +219,7 @@
+     parser.add_argument("--port", type=int, help="Override custom server port")
+     parser.add_argument("--control-host", help="Override display control API host")
+     parser.add_argument("--control-port", type=int, help="Override display control API port")
+-    parser.add_argument("--zenoh-endpoint", help="Override zenoh-grpc endpoint")
++    parser.add_argument("--zenoh-endpoint", help="Zenoh locator, e.g. tcp/127.0.0.1:7447 (empty for LAN discovery)")
+     parser.add_argument("--log-level", default="INFO")
+     return parser.parse_args()
+ 
+@@ -242,14 +232,14 @@
+         host = args.host
+     if args.port:
+         port = args.port
+-    if args.zenoh_endpoint:
++    if args.zenoh_endpoint is not None:
+         zenoh_endpoint = args.zenoh_endpoint
+     if args.control_host:
+         control_host = args.control_host
+     if args.control_port:
+         control_port = args.control_port
+ 
+-    endpoint = normalize_endpoint(zenoh_endpoint)
++    endpoint = zenoh_endpoint.strip()
+     display_server = FoxgloveSdkDisplayServer(runtime)
+     stop_event = threading.Event()
+ 
+@@ -273,7 +263,7 @@
+     logging.info("visualize_foxglove_server listening on ws://%s:%d", host, port)
+     logging.info("display control API listening on http://%s:%d", control_host, control_port)
+     logging.info("display idle clear delay: %.3fs", idle_clear_delay_sec)
+-    logging.info("connecting zenoh-grpc endpoint %s", endpoint)
++    logging.info("joining Zenoh session using %s", endpoint or "LAN discovery")
+     logging.info("initial robot display list is empty")
+ 
+     try:
+--- a/backend/foxglove_aggregator/aggregator.py
++++ b/backend/foxglove_aggregator/aggregator.py
+@@ -234,11 +234,11 @@
+     async def serve(self) -> None:
+         host, port = parse_listen(self.config.listen)
+         upstream_tasks = [asyncio.create_task(upstream.run_forever()) for upstream in self.upstreams.values()]
+-        stop = asyncio.Future()
++        stop = asyncio.Event()
+         loop = asyncio.get_running_loop()
+         for sig in (signal.SIGINT, signal.SIGTERM):
+             with contextlib.suppress(NotImplementedError):
+-                loop.add_signal_handler(sig, stop.set_result, None)
++                loop.add_signal_handler(sig, stop.set)
+ 
+         async with websockets.serve(
+             self.handle_frontend,
+@@ -248,7 +248,7 @@
+             max_size=None,
+         ):
+             logging.info("aggregator listening on ws://%s:%d", host, port)
+-            await stop
++            await stop.wait()
+ 
+         for task in upstream_tasks:
+             task.cancel()
+--- a/config/default_config.yaml
++++ b/config/default_config.yaml
+@@ -26,7 +26,7 @@
+       foxglove_sdk_server:
+         listen_host: 127.0.0.1
+         listen_port: 18767
+-        zenoh_grpc_endpoint: unix:///tmp/zenoh-grpc.sock
++        zenoh_endpoint: ''
+       display_control_api:
+         proxy_path: /foxglove_studio_embed/api
+         listen_host: 127.0.0.1
+@@ -35,10 +35,11 @@
+       publish_rate_hz: 20.0
+       history_publish_rate_hz: 5.0
+     foxglove_bridge_ros2:
+-      enabled: false
++      enabled: true
+       listen_host: 127.0.0.1
+       listen_port: 18766
+       services_enabled: false
+-      distro: humble
+-      setup_script: /opt/ros/humble/setup.bash
+-      overlay_setup_scripts: []
++      distro: lyrical
++      setup_script: /opt/ros/lyrical/setup.bash
++      overlay_setup_scripts:
++      - /home/libozhao/ros2_ws/install/local_setup.bash
+--- a/config/config_schema.yaml
++++ b/config/config_schema.yaml
+@@ -196,15 +196,15 @@
+                     enum:
+                     - 18767
+                     need_restart: true
+-                  zenoh_grpc_endpoint:
++                  zenoh_endpoint:
+                     type: string
+-                    description: zenoh-grpc endpoint used by the Foxglove SDK server
+-                      to subscribe to robot telemetry.
++                    description: Optional Zenoh locator such as tcp/127.0.0.1:7447.
++                      Leave empty for LAN discovery.
+                     need_restart: true
+                 required:
+                 - listen_host
+                 - listen_port
+-                - zenoh_grpc_endpoint
++                - zenoh_endpoint
+                 additionalProperties: false
+               display_control_api:
+                 type: object
+@@ -298,18 +298,19 @@
+                 need_restart: true
+               distro:
+                 type: string
+-                default: humble
++                default: lyrical
+                 minLength: 1
+                 need_restart: true
+               setup_script:
+                 type: string
+-                default: /opt/ros/humble/setup.bash
++                default: /opt/ros/lyrical/setup.bash
+                 need_restart: true
+               overlay_setup_scripts:
+                 type: array
+                 items:
+                   type: string
+-                default: []
++                default:
++                - /home/libozhao/ros2_ws/install/local_setup.bash
+                 description: ROS2 message workspace setup scripts, available in the
+                   selected host/container.
+             required:
+--- a/scripts/pre_install.sh
++++ b/scripts/pre_install.sh
+@@ -11,7 +11,7 @@
+   docker_helper_target_use_docker_container "$(get foxglove_studio_embed.ros_runtime.docker.container '')"
+ fi
+ if [[ "$ros1" == true || "$ros2" == true ]]; then
+-  if [[ "$ros2" == true ]]; then distro="$(get foxglove_studio_embed.backend.foxglove_bridge_ros2.distro humble)"; else distro="$(get ros.distro noetic)"; fi
++  if [[ "$ros2" == true ]]; then distro="$(get foxglove_studio_embed.backend.foxglove_bridge_ros2.distro lyrical)"; else distro="$(get ros.distro noetic)"; fi
+   [[ "$distro" =~ ^[a-z0-9]+$ ]] || exit 1
+   if docker_helper_target_is_docker; then
+     docker_helper_target_exec_bash "dpkg -s ros-$distro-foxglove-bridge >/dev/null || { apt-get update && apt-get install -y ros-$distro-foxglove-bridge; }"
+@@ -20,14 +20,9 @@
+   fi
+ fi
+ # Prepare the ROS2 bridge when ROS2 exists even if its runtime toggle is off.
+-distro="$(get foxglove_studio_embed.backend.foxglove_bridge_ros2.distro humble)"
++distro="$(get foxglove_studio_embed.backend.foxglove_bridge_ros2.distro lyrical)"
+ if [[ -f "/opt/ros/$distro/setup.bash" && ! -f "/opt/ros/$distro/share/foxglove_bridge/package.xml" && ! -f "$APP_ROOT/.ros-deps/opt/ros/$distro/share/foxglove_bridge/package.xml" ]]; then
+   python3 "$APP_ROOT/scripts/install_ros_deb.py" "ros-$distro-foxglove-bridge" "$APP_ROOT/.ros-deps"
+ fi
+ python3 -m venv "$APP_ROOT/.venv"
+-"$APP_ROOT/.venv/bin/python" -m pip install 'foxglove-sdk' 'websockets<14' PyYAML cbor2
+-# Use the release wheel shared with the Zenoh service when available.
+-case "$(uname -m)" in x86_64) triple=x86_64;; aarch64) triple=aarch64;; *) exit 1;; esac
+-wheel="$(find "$APP_ROOT/assets" -name "*${triple}.whl" -print -quit)"
+-[[ -f "$wheel" ]] || { echo 'gRPC release wheel missing' >&2; exit 1; }
+-"$APP_ROOT/.venv/bin/python" -m pip install "$wheel"
++"$APP_ROOT/.venv/bin/python" -m pip install 'foxglove-sdk==0.31.0' 'websockets==13.1' PyYAML cbor2 'eclipse-zenoh==1.9.0'
+--- a/start.sh
++++ b/start.sh
+@@ -2,7 +2,7 @@
+ set -e
+ 
+ echo "[start.sh] started at $(date '+%Y-%m-%d %H:%M:%S')"
+-echo "[start.sh] app: ${AIVUDA_APP_ID:-foxglove_studio_embed}@${AIVUDA_APP_VERSION:-0.1.0}"
++echo "[start.sh] app: ${AIVUDA_APP_ID:-foxglove_studio_embed}@${AIVUDA_APP_VERSION:-0.2.5}"
+ 
+ APP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ CONFIG_PATH="${AIVUDA_APP_CONFIG_PATH:-${APP_ROOT}/config/default_config.yaml}"
+@@ -145,10 +145,11 @@
+ )"
+ 
+   if [[ "$bridge_ros_version" == 2 ]]; then
+-    printf -v bridge_command 'source %q; exec ros2 launch foxglove_bridge foxglove_bridge_launch.xml port:=%q address:=%q capabilities:=%q service_whitelist:=%q' \
+-      "$setup_script" "$ros_bridge_port" "$ros_bridge_host" "$foxglove_bridge_capabilities" "$foxglove_bridge_service_whitelist"
++    printf -v bridge_command 'exec ros2 launch foxglove_bridge foxglove_bridge_launch.xml port:=%q address:=%q capabilities:=%q service_whitelist:=%q' \
++      "$ros_bridge_port" "$ros_bridge_host" "$foxglove_bridge_capabilities" "$foxglove_bridge_service_whitelist"
+     # Source configured message overlays before bridge startup, including custom flight status types.
+-    local overlays overlay prefix=""
++    local overlays overlay prefix
++    printf -v prefix 'set -e; source %q; ' "$setup_script"
+     overlays="$(yaml_get 'foxglove_studio_embed.backend.foxglove_bridge_ros2.overlay_setup_scripts' '[]')"
+     while IFS= read -r overlay; do
+       [[ -n "$overlay" ]] || continue
+@@ -192,7 +193,7 @@
+ if [[ "$ros2_bridge_enabled" == true ]]; then
+   bridge_ros_version=2
+   foxglove_bridge_enabled=true
+-  ros_distro="$(yaml_get 'foxglove_studio_embed.backend.foxglove_bridge_ros2.distro' 'humble')"
++  ros_distro="$(yaml_get 'foxglove_studio_embed.backend.foxglove_bridge_ros2.distro' 'lyrical')"
+   setup_script="$(yaml_get 'foxglove_studio_embed.backend.foxglove_bridge_ros2.setup_script' "/opt/ros/$ros_distro/setup.bash")"
+   ros_bridge_host="$(yaml_get 'foxglove_studio_embed.backend.foxglove_bridge_ros2.listen_host' '127.0.0.1')"
+   ros_bridge_port="$(yaml_get 'foxglove_studio_embed.backend.foxglove_bridge_ros2.listen_port' '18766')"
+@@ -205,7 +206,7 @@
+ control_port="$(yaml_get 'foxglove_studio_embed.backend.visualize.display_control_api.listen_port' '19287')"
+ control_proxy_path="$(yaml_get 'foxglove_studio_embed.backend.visualize.display_control_api.proxy_path' '/foxglove_studio_embed/api')"
+ idle_clear_delay_sec="$(yaml_get 'foxglove_studio_embed.backend.visualize.display_control_api.idle_clear_delay_sec' '3.0')"
+-zenoh_endpoint="$(yaml_get 'foxglove_studio_embed.backend.visualize.foxglove_sdk_server.zenoh_grpc_endpoint' 'unix:///tmp/zenoh-grpc.sock')"
++zenoh_endpoint="$(yaml_get 'foxglove_studio_embed.backend.visualize.foxglove_sdk_server.zenoh_endpoint' '')"
+ 
+ echo "[start.sh] config path: ${CONFIG_PATH}"
+ echo "[start.sh] runtime dir: ${RUNTIME_DIR}"
+@@ -234,7 +235,7 @@
+ 
+ backend_python="${FOXGLOVE_BACKEND_PYTHON:-${APP_ROOT}/.venv/bin/python}"
+ [[ -x "$backend_python" ]] || { echo 'Backend venv missing; run pre_install.sh' >&2; exit 1; }
+-"$backend_python" -c 'import cbor2, foxglove, websockets, yaml, zenoh_grpc'
++"$backend_python" -c 'import cbor2, foxglove, websockets, yaml, zenoh'
+ 
+ wait_for_tcp() {
+   local host="$1"
+--- a/pack.sh
++++ b/pack.sh
+@@ -9,7 +9,11 @@
+ VERSION="$(sed -n 's/^version: *//p' manifest.yaml)"
+ [[ "$APP_ID" =~ ^[A-Za-z0-9_.-]+$ && "$VERSION" =~ ^[A-Za-z0-9_.-]+$ ]]
+ 
+-(cd "foxglove_studio_panel" && npm ci && npm run build)
++if [[ -d foxglove_studio_panel ]]; then
++  (cd foxglove_studio_panel && npm ci && npm run build)
++else
++  test -s ui/index.html
++fi
+ 
+ # ROS source packages are built by pre_install in the selected host/container.
+ # System-package wrappers require no workspace or compilation.
+@@ -24,5 +28,6 @@
+   --exclude='tests' --exclude='*.tar.gz' --exclude='*.tgz' --exclude='*.zip' \
+   --exclude='./foxglove_studio_panel' \
+   --exclude="${OUTPUT#"$APP_ROOT/"}" \
++  --sort=name --mtime="@${SOURCE_DATE_EPOCH:-0}" --owner=0 --group=0 --numeric-owner \
+   --transform='s,^\./,,' -czf "$ARCHIVE" .
+ printf '%s\n' "$ARCHIVE"
+--- a/manifest.yaml
++++ b/manifest.yaml
+@@ -2,7 +2,7 @@
+ name: Foxglove Studio Embed
+ description: Embed Foxglove Studio as an AivudaOS app package with a built-in viewer
+   UI (ROS1/ROS2 bridge targets support Docker).
+-version: 0.2.4
++version: 0.2.5
+ run:
+   entrypoint: start.sh
+   args: []
+--- a/README.md
++++ b/README.md
+@@ -85,7 +85,7 @@
+ - aggregator 检测到 Studio 前端连接数变化后会 POST lifecycle event；当连接数为 0 时，display control API 会等待 `foxglove_studio_embed.backend.visualize.display_control_api.idle_clear_delay_sec` 秒，期间无人重连则清空所有 display robots
+ - 当前 `config/caddy/foxglove_studio_embed.caddy` 是固定路由：`foxglove_studio_embed.backend.embed_mirror_server.proxy_path=/foxglove_studio_embed/embed_mirror_server`、`foxglove_studio_embed.backend.aggregator.proxy_path=/foxglove_studio_embed/ws`、`foxglove_studio_embed.backend.visualize.display_control_api.proxy_path=/foxglove_studio_embed/api`，并固定反代到本机端口 `3000`、`8765` 和 `19287`
+ - 因为 Caddy 配置目前是固定的，config schema 会将相关 `host`、`port`、`proxy_path` 字段限制为单一可选值，避免修改配置后与实际反代链路不一致
+-- 若系统 Python 低于 3.10，`scripts/pre_install.sh` 会自动使用/安装 Miniconda，并创建 `foxglove-studio-embed-py310` 环境供 `start.sh` 使用；该脚本不会安装 `playwright` 之类仅 crawl 阶段需要的依赖
++- Python 后端默认使用应用内的 `.venv`。
+ 
+ display lifecycle 清理链路：
+ 
+@@ -107,7 +107,7 @@
+   -> display control API replace displays
+ ```
+ 
+-ROS2 bridge 配置：`backend.foxglove_bridge_ros2.enabled`，与 ROS1 bridge 互斥，默认两者均关闭。`overlay_setup_scripts` 可加载自定义 ROS2 消息工作空间。ROS2 CDR、Humble 元数据和 PoseStamped 已实测；Docker bridge 配合 host 聚合服务使用。
++ROS2 bridge 配置：`backend.foxglove_bridge_ros2.enabled`，默认启用，先加载 Lyrical 基座，再加载已配置的消息工作区。`overlay_setup_scripts` 可加载自定义 ROS2 消息工作空间。模型、轨迹、TF 与原生 ROS 2 CDR 消息共用聚合 WebSocket。可视化后端使用官方 eclipse-zenoh Python SDK，通过局域网发现 peer。若环境要求固定连接，在 backend.visualize.foxglove_sdk_server.zenoh_endpoint 填写实际已监听的 Zenoh locator，如 tcp/192.168.20.10:7447。
+ 
+ ## Standalone packaging
+ 
+--- a/backend/foxglove_embed_mirror_server/manifest.json
++++ b/backend/foxglove_embed_mirror_server/manifest.json
+@@ -58,8 +58,8 @@
+     },
+     {
+       "path": ".assets/1518.8c4dd77a02bc5dfcfcaf.js",
+-      "size": 19386,
+-      "sha256": "dbb1a73847da989f26ec4d757abb8dca1c3add4b54364130b49574ee1e76d04a",
++      "size": 19579,
++      "sha256": "395e3154abd8df2e55d32b2fb48ef32823dea02a13019b6cc287fa012dfeb21a",
+       "content_type": "application/javascript"
+     },
+     {
+@@ -88,8 +88,8 @@
+     },
+     {
+       "path": ".assets/2063.b79142f32438cfebc95a.js",
+-      "size": 2471,
+-      "sha256": "51ba6d0183e3b5340c66c68cbf5b30f699466dc09af273f6b0c6c9e219ded065",
++      "size": 2664,
++      "sha256": "b22cc68c8ad1d31dd56aa1e436753896497cb24c0de202a941083a2d399474ec",
+       "content_type": "application/javascript"
+     },
+     {
+@@ -106,8 +106,8 @@
+     },
+     {
+       "path": ".assets/2273.732d9c735aae3aebe1b1.js",
+-      "size": 24523,
+-      "sha256": "ba19a227f05d35b9b85431ba53b822cb7b19f567f38bda3cc26c868b38ba111c",
++      "size": 24716,
++      "sha256": "380c83a6fcef5dd0b7680da989f989546ae1da468661ece1304b956cb9959041",
+       "content_type": "application/javascript"
+     },
+     {
+@@ -118,8 +118,8 @@
+     },
+     {
+       "path": ".assets/2355.b4c7c646d211845f62ba.js",
+-      "size": 186570,
+-      "sha256": "8a7d7175dfcbda980a413da6cb7c0457fb68ffa0a29ea9ca26886e802d259cfe",
++      "size": 186763,
++      "sha256": "fb7fe8a6cda0404d3a870384fc5d9b7d936e426d64a7624c7dc1d9e2ee413acc",
+       "content_type": "application/javascript"
+     },
+     {
+@@ -334,8 +334,8 @@
+     },
+     {
+       "path": ".assets/4444.d3c3290f1599a3890848.js",
+-      "size": 3228,
+-      "sha256": "7c13bc8eaafc345cfe69650822e23d41017cb1ca2c7983e1c75e7b3dccd63542",
++      "size": 3421,
++      "sha256": "e728fe82af8650bf44e7135a8d3e7f27e285c351e2c4b456f86d62f5ff5064d7",
+       "content_type": "application/javascript"
+     },
+     {
+@@ -346,8 +346,8 @@
+     },
+     {
+       "path": ".assets/449.d4e36edd99fa61c1fb88.js",
+-      "size": 11974,
+-      "sha256": "c11d52ebd294b04bfe10b1a0e38a726f1ccfb8d56b0e8c3083527d264bb0d5ff",
++      "size": 12167,
++      "sha256": "ee854c1bae1ab287a4daa2b1aac4f79804104771349774b38c671f14a7ed0de8",
+       "content_type": "application/javascript"
+     },
+     {
+@@ -358,8 +358,8 @@
+     },
+     {
+       "path": ".assets/4709.90e9f7b0c43ebf82bb4e.js",
+-      "size": 14884,
+-      "sha256": "80df04d192464dee15f1910c5e4a293031558cacfd7045824705c652da8df2f9",
++      "size": 15077,
++      "sha256": "858b9620811c49e3545df6af5989ecabeb2372132e8670a43aa7eb7a0bc8b84f",
+       "content_type": "application/javascript"
+     },
+     {
+@@ -424,8 +424,8 @@
+     },
+     {
+       "path": ".assets/5551.7b5db01a61fc04087be4.js",
+-      "size": 13904,
+-      "sha256": "d04fa3a1123f556531d4aa7ee064950e1720e78980f048cbcbe86edb5f12055a",
++      "size": 14097,
++      "sha256": "adc4d810f41c504e9c493fac701cc9810c0b2a0f05f4df267af81c5ae439b51a",
+       "content_type": "application/javascript"
+     },
+     {
+@@ -436,8 +436,8 @@
+     },
+     {
+       "path": ".assets/563.f9be4000309090708cee.js",
+-      "size": 71293,
+-      "sha256": "34118b8431660b409c072467d84faf4bf1454fdee76f3937af91ffab637302b9",
++      "size": 71486,
++      "sha256": "27928c9e3459a9254f4ab97d7a33ddb1097f983da856a948a3031803adecc492",
+       "content_type": "application/javascript"
+     },
+     {
+@@ -448,8 +448,8 @@
+     },
+     {
+       "path": ".assets/5720.1cc729fd99b9c8210318.js",
+-      "size": 21779,
+-      "sha256": "3c90fa7687ee105d96adfc518aa61f8c3cc5539ad4be07d642a994d26df2ea6e",
++      "size": 21972,
++      "sha256": "24b45f335077c7aaeb8d58061660065c51121efd53261aac745d422244aca57f",
+       "content_type": "application/javascript"
+     },
+     {
+@@ -550,8 +550,8 @@
+     },
+     {
+       "path": ".assets/7301.d3134e4bd2304e3e8fbb.js",
+-      "size": 2471,
+-      "sha256": "b533ecee735b7740c005f0afb8c19cfb39a958c51e0012e5ecdcd97202b7ce28",
++      "size": 2664,
++      "sha256": "01663b67ec66a476285b9fa274954a3e85db21030fc5794db9f396b2124371b7",
+       "content_type": "application/javascript"
+     },
+     {
+@@ -610,8 +610,8 @@
+     },
+     {
+       "path": ".assets/7900.52ec693cb633d3ca9175.js",
+-      "size": 25694,
+-      "sha256": "c37ee7430e43e3b3ae04b87dc2d0466080f9a44f9e171d570bf0f19e4cf56be6",
++      "size": 25887,
++      "sha256": "1fc8ad00bd1047686cbc900260bdc5e33851a51dd277d31bfc50cdb43c63112d",
+       "content_type": "application/javascript"
+     },
+     {
+@@ -760,8 +760,8 @@
+     },
+     {
+       "path": ".assets/9199.07d139ebf0031559c70e.js",
+-      "size": 10777,
+-      "sha256": "d84209e2879cb05785500ba29c120b83b7a0f6b37df5c6aff98a55ead6493fdd",
++      "size": 10970,
++      "sha256": "d0df06823dea43b806f70ccf630090a82646cddc1216c6329db741750081d589",
+       "content_type": "application/javascript"
+     },
+     {
+@@ -772,8 +772,8 @@
+     },
+     {
+       "path": ".assets/9319.74e1c88e903a3ab3b4dd.js",
+-      "size": 3941,
+-      "sha256": "785948bd447f7c9750a85b7869b4a272f4b86f28c55d8441cc185cc574c8fea5",
++      "size": 4134,
++      "sha256": "93cf8cb690a2b66e91bd95b661846625d0101abd5cc1b3563feb3706e5cb8dd1",
+       "content_type": "application/javascript"
+     },
+     {
+@@ -814,8 +814,8 @@
+     },
+     {
+       "path": ".assets/9682.1dd361fa622da61af922.js",
+-      "size": 3228,
+-      "sha256": "6717702966bc81d1c42940253e3474a4ec33b50d26e5b75741a97f66ba719e16",
++      "size": 3421,
++      "sha256": "2b5a971e8655464184f3522410ae1646f16664b2838f2f4a171851a579ad6dec",
+       "content_type": "application/javascript"
+     },
+     {
+@@ -832,26 +832,26 @@
+     },
+     {
+       "path": ".assets/9807.e50c77d9d517b1808cf6.js",
+-      "size": 5298,
+-      "sha256": "df7b133811da828046f910eb08ff93834959ed712bc0e3c1e9723dbf0ec5f965",
++      "size": 5491,
++      "sha256": "cda34a225d37da1e40be7dc8daddacbf0e9fd492cca036cf558d071ce31b1e72",
+       "content_type": "application/javascript"
+     },
+     {
+       "path": ".assets/9829.1974ca4be589fe0837ad.js",
+-      "size": 19606,
+-      "sha256": "fe9ce1b63507f335b6d3e56a1066d7c91dd557f085baa83b08df2f1331cf3d02",
++      "size": 19799,
++      "sha256": "37bee902dab711c5c57e614326d6f5c67aac28d83532e849b8c3d6876e680d57",
+       "content_type": "application/javascript"
+     },
+     {
+       "path": ".assets/9843.4483c5191ca7094e9ca7.js",
+-      "size": 13940,
+-      "sha256": "edf35f87426333d05cca7f2cc29e5f2066e0e2c95df57ad91ed46661636c2a4a",
++      "size": 14133,
++      "sha256": "1e3113051528270bc0fc329665660396ed773f0d897b6c4513c53e9ffbde7062",
+       "content_type": "application/javascript"
+     },
+     {
+       "path": ".assets/987.3a3ec44b7b6c1c5eb583.js",
+-      "size": 2972,
+-      "sha256": "346f090f8e254fe739ed8826f1bd37a41fa2e7bf55d5416c12efb374448a1cd1",
++      "size": 3165,
++      "sha256": "b16ffbf6dc0a86d554fab4997e6a886cd9e27010e8ea492368a0024e8c266a7f",
+       "content_type": "application/javascript"
+     },
+     {

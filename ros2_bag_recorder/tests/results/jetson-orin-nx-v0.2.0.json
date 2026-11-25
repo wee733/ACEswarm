@@ -1,0 +1,3985 @@
+{
+  "device": "NVIDIA Jetson Orin NX, aarch64, ROS 2 Jazzy, rmw_fastrtps_cpp, 8 online CPUs, schedutil",
+  "disk": "/dev/nvme0n1p1, ext4",
+  "source": "isolated localhost synthetic DDS streams, raw 1280x720 at 25 Hz unless encoded-only, identical valid JPEG and Annex-B H264 IDR fixtures; no live camera",
+  "method": "Timed CPU percent from recorder process tree CPU ticks, normalized against one core; RSS sampled from /proc every 200 ms; per-topic readback against publish sequences, exact header times and payload bytes. Each sample uses an independent recorder process and fresh MCAP. All timed runs were uncompressed.",
+  "runs": {
+    "baseline_mono": [
+      {
+        "backend_dir": "/tmp/mixed-recorder-bench.cn8Vc6hK/baseline",
+        "backend": "python",
+        "domain": 84,
+        "encoding": "mono8",
+        "qos": "best_effort",
+        "seconds": 5,
+        "telemetry_hz": 100,
+        "camera_hz": 25,
+        "bag_bytes": 111134255,
+        "topics": {
+          "telemetry_0": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.25
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.334,
+              "p95": 3.102,
+              "max": 4.371
+            }
+          },
+          "telemetry_1": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.26
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.719,
+              "p95": 3.211,
+              "max": 4.502
+            }
+          },
+          "telemetry_2": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.26
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.855,
+              "p95": 3.295,
+              "max": 4.587
+            }
+          },
+          "telemetry_3": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.26
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.942,
+              "p95": 3.368,
+              "max": 4.666
+            }
+          },
+          "telemetry_4": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.27
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.018,
+              "p95": 3.439,
+              "max": 4.738
+            }
+          },
+          "telemetry_5": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.27
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.086,
+              "p95": 3.509,
+              "max": 4.811
+            }
+          },
+          "telemetry_6": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.27
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.151,
+              "p95": 3.578,
+              "max": 4.879
+            }
+          },
+          "telemetry_7": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.27
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.217,
+              "p95": 3.644,
+              "max": 4.949
+            }
+          },
+          "image": {
+            "sent": 125,
+            "read_back": 120,
+            "missing": 5,
+            "first_missing_sequences": [
+              0,
+              35,
+              51,
+              59,
+              113
+            ],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 120,
+              "dropped_count": 0,
+              "written_bytes": 110599200,
+              "actual_hz": 17.85
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.228,
+              "p95": 2.211,
+              "max": 2.472
+            }
+          },
+          "camera_info": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 125,
+              "dropped_count": 0,
+              "written_bytes": 40000,
+              "actual_hz": 18.38
+            },
+            "bag_minus_header_ms": {
+              "p50": 3.449,
+              "p95": 4.665,
+              "max": 5.937
+            }
+          }
+        },
+        "publish_window_s": 4.9903,
+        "max_publisher_late_ms": 3.1,
+        "recorder_cpu_pct_one_core": 24.05,
+        "recorder_tree_pids": [
+          38733
+        ],
+        "peak_observed_recorder_tree_rss_mib": 80.36,
+        "host_udp_error_deltas": {
+          "InErrors": 0,
+          "RcvbufErrors": 0,
+          "SndbufErrors": 0
+        },
+        "host_loopback_drop_deltas": {
+          "rx_dropped": 0,
+          "tx_dropped": 0
+        },
+        "lost_total": 5
+      },
+      {
+        "backend_dir": "/tmp/mixed-recorder-bench.cn8Vc6hK/baseline",
+        "backend": "python",
+        "domain": 84,
+        "encoding": "mono8",
+        "qos": "best_effort",
+        "seconds": 5,
+        "telemetry_hz": 100,
+        "camera_hz": 25,
+        "bag_bytes": 112978413,
+        "topics": {
+          "telemetry_0": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 73.71
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.338,
+              "p95": 2.998,
+              "max": 4.327
+            }
+          },
+          "telemetry_1": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 73.71
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.741,
+              "p95": 3.122,
+              "max": 4.471
+            }
+          },
+          "telemetry_2": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 73.71
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.875,
+              "p95": 3.206,
+              "max": 4.564
+            }
+          },
+          "telemetry_3": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 73.72
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.957,
+              "p95": 3.283,
+              "max": 4.645
+            }
+          },
+          "telemetry_4": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 73.72
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.032,
+              "p95": 3.353,
+              "max": 4.721
+            }
+          },
+          "telemetry_5": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 73.72
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.103,
+              "p95": 3.426,
+              "max": 4.794
+            }
+          },
+          "telemetry_6": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 73.72
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.173,
+              "p95": 3.494,
+              "max": 4.866
+            }
+          },
+          "telemetry_7": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 73.72
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.239,
+              "p95": 3.596,
+              "max": 4.939
+            }
+          },
+          "image": {
+            "sent": 125,
+            "read_back": 122,
+            "missing": 3,
+            "first_missing_sequences": [
+              0,
+              19,
+              34
+            ],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 122,
+              "dropped_count": 0,
+              "written_bytes": 112442520,
+              "actual_hz": 18.22
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.216,
+              "p95": 2.035,
+              "max": 2.616
+            }
+          },
+          "camera_info": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 125,
+              "dropped_count": 0,
+              "written_bytes": 40000,
+              "actual_hz": 18.24
+            },
+            "bag_minus_header_ms": {
+              "p50": 3.45,
+              "p95": 4.561,
+              "max": 5.721
+            }
+          }
+        },
+        "publish_window_s": 4.9904,
+        "max_publisher_late_ms": 2.39,
+        "recorder_cpu_pct_one_core": 23.85,
+        "recorder_tree_pids": [
+          39747
+        ],
+        "peak_observed_recorder_tree_rss_mib": 80.43,
+        "host_udp_error_deltas": {
+          "InErrors": 0,
+          "RcvbufErrors": 0,
+          "SndbufErrors": 0
+        },
+        "host_loopback_drop_deltas": {
+          "rx_dropped": 0,
+          "tx_dropped": 0
+        },
+        "lost_total": 3
+      },
+      {
+        "backend_dir": "/tmp/mixed-recorder-bench.cn8Vc6hK/baseline",
+        "backend": "python",
+        "domain": 84,
+        "encoding": "mono8",
+        "qos": "best_effort",
+        "seconds": 5,
+        "telemetry_hz": 100,
+        "camera_hz": 25,
+        "bag_bytes": 110212176,
+        "topics": {
+          "telemetry_0": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.57
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.498,
+              "p95": 3.314,
+              "max": 5.039
+            }
+          },
+          "telemetry_1": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.58
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.816,
+              "p95": 3.45,
+              "max": 5.174
+            }
+          },
+          "telemetry_2": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.58
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.106,
+              "p95": 3.54,
+              "max": 5.254
+            }
+          },
+          "telemetry_3": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.59
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.226,
+              "p95": 3.622,
+              "max": 5.332
+            }
+          },
+          "telemetry_4": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.59
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.308,
+              "p95": 3.698,
+              "max": 5.404
+            }
+          },
+          "telemetry_5": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.59
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.383,
+              "p95": 3.77,
+              "max": 5.476
+            }
+          },
+          "telemetry_6": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.59
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.455,
+              "p95": 3.84,
+              "max": 5.549
+            }
+          },
+          "telemetry_7": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.59
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.522,
+              "p95": 3.907,
+              "max": 5.62
+            }
+          },
+          "image": {
+            "sent": 125,
+            "read_back": 119,
+            "missing": 6,
+            "first_missing_sequences": [
+              0,
+              39,
+              42,
+              43,
+              45,
+              46
+            ],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 119,
+              "dropped_count": 0,
+              "written_bytes": 109677540,
+              "actual_hz": 18.43
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.411,
+              "p95": 2.508,
+              "max": 2.861
+            }
+          },
+          "camera_info": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 125,
+              "dropped_count": 0,
+              "written_bytes": 40000,
+              "actual_hz": 18.45
+            },
+            "bag_minus_header_ms": {
+              "p50": 3.765,
+              "p95": 5.43,
+              "max": 6.469
+            }
+          }
+        },
+        "publish_window_s": 4.9903,
+        "max_publisher_late_ms": 2.48,
+        "recorder_cpu_pct_one_core": 26.05,
+        "recorder_tree_pids": [
+          40504
+        ],
+        "peak_observed_recorder_tree_rss_mib": 80.64,
+        "host_udp_error_deltas": {
+          "InErrors": 0,
+          "RcvbufErrors": 0,
+          "SndbufErrors": 0
+        },
+        "host_loopback_drop_deltas": {
+          "rx_dropped": 0,
+          "tx_dropped": 0
+        },
+        "lost_total": 6
+      }
+    ],
+    "baseline_rgbvideo": [
+      {
+        "backend_dir": "/tmp/mixed-recorder-bench.cn8Vc6hK/baseline",
+        "backend": "python",
+        "domain": 84,
+        "encoding": "rgb8",
+        "qos": "best_effort",
+        "seconds": 5,
+        "telemetry_hz": 100,
+        "camera_hz": 25,
+        "bag_bytes": 351444462,
+        "topics": {
+          "telemetry_0": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 73.76
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.373,
+              "p95": 6.911,
+              "max": 9.971
+            }
+          },
+          "telemetry_1": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 73.76
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.76,
+              "p95": 7.038,
+              "max": 10.102
+            }
+          },
+          "telemetry_2": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 73.77
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.902,
+              "p95": 7.118,
+              "max": 10.191
+            }
+          },
+          "telemetry_3": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 73.77
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.998,
+              "p95": 7.197,
+              "max": 10.27
+            }
+          },
+          "telemetry_4": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 73.77
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.075,
+              "p95": 7.266,
+              "max": 10.347
+            }
+          },
+          "telemetry_5": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 73.77
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.148,
+              "p95": 7.335,
+              "max": 10.423
+            }
+          },
+          "telemetry_6": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 73.77
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.214,
+              "p95": 7.402,
+              "max": 10.495
+            }
+          },
+          "telemetry_7": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 73.77
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.281,
+              "p95": 7.47,
+              "max": 10.566
+            }
+          },
+          "image": {
+            "sent": 125,
+            "read_back": 122,
+            "missing": 3,
+            "first_missing_sequences": [
+              0,
+              76,
+              109
+            ],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 122,
+              "dropped_count": 0,
+              "written_bytes": 337312920,
+              "actual_hz": 17.7
+            },
+            "bag_minus_header_ms": {
+              "p50": 2.766,
+              "p95": 4.905,
+              "max": 5.503
+            }
+          },
+          "camera_info": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 125,
+              "dropped_count": 0,
+              "written_bytes": 40000,
+              "actual_hz": 18.25
+            },
+            "bag_minus_header_ms": {
+              "p50": 7.055,
+              "p95": 9.611,
+              "max": 12.709
+            }
+          },
+          "compressed": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 125,
+              "dropped_count": 0,
+              "written_bytes": 7079000,
+              "actual_hz": 18.25
+            },
+            "bag_minus_header_ms": {
+              "p50": 7.142,
+              "p95": 9.731,
+              "max": 12.831
+            }
+          },
+          "video": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 125,
+              "dropped_count": 0,
+              "written_bytes": 6482500,
+              "actual_hz": 18.25
+            },
+            "bag_minus_header_ms": {
+              "p50": 7.245,
+              "p95": 9.86,
+              "max": 12.964
+            }
+          }
+        },
+        "publish_window_s": 4.9905,
+        "max_publisher_late_ms": 4.4,
+        "recorder_cpu_pct_one_core": 34.27,
+        "recorder_tree_pids": [
+          39087
+        ],
+        "peak_observed_recorder_tree_rss_mib": 93.5,
+        "host_udp_error_deltas": {
+          "InErrors": 0,
+          "RcvbufErrors": 0,
+          "SndbufErrors": 0
+        },
+        "host_loopback_drop_deltas": {
+          "rx_dropped": 0,
+          "tx_dropped": 0
+        },
+        "lost_total": 3
+      },
+      {
+        "backend_dir": "/tmp/mixed-recorder-bench.cn8Vc6hK/baseline",
+        "backend": "python",
+        "domain": 84,
+        "encoding": "rgb8",
+        "qos": "best_effort",
+        "seconds": 5,
+        "telemetry_hz": 100,
+        "camera_hz": 25,
+        "bag_bytes": 309964527,
+        "topics": {
+          "telemetry_0": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.52
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.513,
+              "p95": 6.896,
+              "max": 8.817
+            }
+          },
+          "telemetry_1": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.53
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.837,
+              "p95": 7.034,
+              "max": 8.939
+            }
+          },
+          "telemetry_2": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.53
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.036,
+              "p95": 7.127,
+              "max": 9.022
+            }
+          },
+          "telemetry_3": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.54
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.171,
+              "p95": 7.208,
+              "max": 9.098
+            }
+          },
+          "telemetry_4": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.54
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.26,
+              "p95": 7.307,
+              "max": 9.171
+            }
+          },
+          "telemetry_5": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.54
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.348,
+              "p95": 7.391,
+              "max": 9.243
+            }
+          },
+          "telemetry_6": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.54
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.428,
+              "p95": 7.467,
+              "max": 9.315
+            }
+          },
+          "telemetry_7": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.54
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.51,
+              "p95": 7.537,
+              "max": 9.384
+            }
+          },
+          "image": {
+            "sent": 125,
+            "read_back": 107,
+            "missing": 18,
+            "first_missing_sequences": [
+              0,
+              9,
+              10,
+              16,
+              17,
+              18,
+              24,
+              27,
+              30,
+              33
+            ],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 107,
+              "dropped_count": 0,
+              "written_bytes": 295840020,
+              "actual_hz": 16.41
+            },
+            "bag_minus_header_ms": {
+              "p50": 3.981,
+              "p95": 5.124,
+              "max": 6.072
+            }
+          },
+          "camera_info": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 125,
+              "dropped_count": 0,
+              "written_bytes": 40000,
+              "actual_hz": 18.45
+            },
+            "bag_minus_header_ms": {
+              "p50": 7.551,
+              "p95": 9.915,
+              "max": 12.289
+            }
+          },
+          "compressed": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 125,
+              "dropped_count": 0,
+              "written_bytes": 7079000,
+              "actual_hz": 18.45
+            },
+            "bag_minus_header_ms": {
+              "p50": 7.646,
+              "p95": 10.033,
+              "max": 12.405
+            }
+          },
+          "video": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 125,
+              "dropped_count": 0,
+              "written_bytes": 6482500,
+              "actual_hz": 18.45
+            },
+            "bag_minus_header_ms": {
+              "p50": 7.761,
+              "p95": 10.169,
+              "max": 12.54
+            }
+          }
+        },
+        "publish_window_s": 4.9904,
+        "max_publisher_late_ms": 4.02,
+        "recorder_cpu_pct_one_core": 34.67,
+        "recorder_tree_pids": [
+          40163
+        ],
+        "peak_observed_recorder_tree_rss_mib": 93.79,
+        "host_udp_error_deltas": {
+          "InErrors": 0,
+          "RcvbufErrors": 0,
+          "SndbufErrors": 0
+        },
+        "host_loopback_drop_deltas": {
+          "rx_dropped": 0,
+          "tx_dropped": 0
+        },
+        "lost_total": 18
+      },
+      {
+        "backend_dir": "/tmp/mixed-recorder-bench.cn8Vc6hK/baseline",
+        "backend": "python",
+        "domain": 84,
+        "encoding": "rgb8",
+        "qos": "best_effort",
+        "seconds": 5,
+        "telemetry_hz": 100,
+        "camera_hz": 25,
+        "bag_bytes": 343148475,
+        "topics": {
+          "telemetry_0": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.45
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.473,
+              "p95": 6.891,
+              "max": 10.287
+            }
+          },
+          "telemetry_1": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.45
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.828,
+              "p95": 7.029,
+              "max": 10.452
+            }
+          },
+          "telemetry_2": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.45
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.052,
+              "p95": 7.117,
+              "max": 10.544
+            }
+          },
+          "telemetry_3": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.46
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.161,
+              "p95": 7.196,
+              "max": 10.626
+            }
+          },
+          "telemetry_4": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.46
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.247,
+              "p95": 7.297,
+              "max": 10.703
+            }
+          },
+          "telemetry_5": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.47
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.322,
+              "p95": 7.376,
+              "max": 10.775
+            }
+          },
+          "telemetry_6": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.47
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.401,
+              "p95": 7.447,
+              "max": 10.846
+            }
+          },
+          "telemetry_7": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.47
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.475,
+              "p95": 7.516,
+              "max": 10.915
+            }
+          },
+          "image": {
+            "sent": 125,
+            "read_back": 119,
+            "missing": 6,
+            "first_missing_sequences": [
+              0,
+              10,
+              44,
+              49,
+              52,
+              99
+            ],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 119,
+              "dropped_count": 0,
+              "written_bytes": 329018340,
+              "actual_hz": 17.92
+            },
+            "bag_minus_header_ms": {
+              "p50": 3.128,
+              "p95": 5.038,
+              "max": 9.315
+            }
+          },
+          "camera_info": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 125,
+              "dropped_count": 0,
+              "written_bytes": 40000,
+              "actual_hz": 18.45
+            },
+            "bag_minus_header_ms": {
+              "p50": 7.452,
+              "p95": 9.748,
+              "max": 13.798
+            }
+          },
+          "compressed": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 125,
+              "dropped_count": 0,
+              "written_bytes": 7079000,
+              "actual_hz": 18.45
+            },
+            "bag_minus_header_ms": {
+              "p50": 7.538,
+              "p95": 9.867,
+              "max": 13.922
+            }
+          },
+          "video": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 125,
+              "dropped_count": 0,
+              "written_bytes": 6482500,
+              "actual_hz": 18.45
+            },
+            "bag_minus_header_ms": {
+              "p50": 7.818,
+              "p95": 9.985,
+              "max": 14.079
+            }
+          }
+        },
+        "publish_window_s": 4.9906,
+        "max_publisher_late_ms": 3.94,
+        "recorder_cpu_pct_one_core": 35.47,
+        "recorder_tree_pids": [
+          41004
+        ],
+        "peak_observed_recorder_tree_rss_mib": 93.99,
+        "host_udp_error_deltas": {
+          "InErrors": 0,
+          "RcvbufErrors": 0,
+          "SndbufErrors": 0
+        },
+        "host_loopback_drop_deltas": {
+          "rx_dropped": 0,
+          "tx_dropped": 0
+        },
+        "lost_total": 6
+      }
+    ],
+    "baseline_rgbvideo_reliable": [
+      {
+        "backend_dir": "/tmp/mixed-recorder-bench.cn8Vc6hK/baseline",
+        "backend": "python",
+        "domain": 84,
+        "encoding": "rgb8",
+        "qos": "reliable",
+        "seconds": 5,
+        "telemetry_hz": 100,
+        "telemetry_topics": 8,
+        "raw_images": true,
+        "camera_hz": 25,
+        "bag_bytes": 359739816,
+        "topics": {
+          "telemetry_0": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.22
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.358,
+              "p95": 6.737,
+              "max": 7.551
+            }
+          },
+          "telemetry_1": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.23
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.797,
+              "p95": 6.864,
+              "max": 7.675
+            }
+          },
+          "telemetry_2": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.23
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.912,
+              "p95": 6.95,
+              "max": 7.757
+            }
+          },
+          "telemetry_3": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.23
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.991,
+              "p95": 7.028,
+              "max": 7.831
+            }
+          },
+          "telemetry_4": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.24
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.062,
+              "p95": 7.103,
+              "max": 7.903
+            }
+          },
+          "telemetry_5": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.24
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.132,
+              "p95": 7.174,
+              "max": 7.976
+            }
+          },
+          "telemetry_6": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.24
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.199,
+              "p95": 7.245,
+              "max": 8.047
+            }
+          },
+          "telemetry_7": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 500,
+              "dropped_count": 0,
+              "written_bytes": 26000,
+              "actual_hz": 74.24
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.267,
+              "p95": 7.313,
+              "max": 8.117
+            }
+          },
+          "image": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 125,
+              "dropped_count": 0,
+              "written_bytes": 345607500,
+              "actual_hz": 18.36
+            },
+            "bag_minus_header_ms": {
+              "p50": 2.819,
+              "p95": 5.642,
+              "max": 18.391
+            }
+          },
+          "camera_info": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 125,
+              "dropped_count": 0,
+              "written_bytes": 40000,
+              "actual_hz": 18.38
+            },
+            "bag_minus_header_ms": {
+              "p50": 6.931,
+              "p95": 9.677,
+              "max": 10.588
+            }
+          },
+          "compressed": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 125,
+              "dropped_count": 0,
+              "written_bytes": 7079000,
+              "actual_hz": 18.38
+            },
+            "bag_minus_header_ms": {
+              "p50": 7.019,
+              "p95": 9.771,
+              "max": 10.711
+            }
+          },
+          "video": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "max_hz": 0.0,
+              "written_count": 125,
+              "dropped_count": 0,
+              "written_bytes": 6482500,
+              "actual_hz": 18.39
+            },
+            "bag_minus_header_ms": {
+              "p50": 7.12,
+              "p95": 9.909,
+              "max": 10.855
+            }
+          }
+        },
+        "publish_window_s": 4.9905,
+        "max_publisher_late_ms": 4.94,
+        "recorder_cpu_pct_one_core": 35.27,
+        "recorder_tree_pids": [
+          42256
+        ],
+        "peak_observed_recorder_tree_rss_mib": 93.69,
+        "host_udp_error_deltas": {
+          "InErrors": 0,
+          "RcvbufErrors": 0,
+          "SndbufErrors": 0
+        },
+        "host_loopback_drop_deltas": {
+          "rx_dropped": 0,
+          "tx_dropped": 0
+        },
+        "lost_total": 0
+      }
+    ],
+    "native_mono": [
+      {
+        "backend_dir": "/tmp/rosbag-native-qa/backend",
+        "backend": "cpp",
+        "domain": 84,
+        "encoding": "mono8",
+        "qos": "best_effort",
+        "seconds": 5,
+        "telemetry_hz": 100,
+        "camera_hz": 25,
+        "bag_bytes": 113902572,
+        "topics": {
+          "telemetry_0": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.01109745312407,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.153,
+              "p95": 0.32,
+              "max": 0.921
+            }
+          },
+          "telemetry_1": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.01217516871942,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.196,
+              "p95": 0.485,
+              "max": 1.153
+            }
+          },
+          "telemetry_2": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.01260474632763,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.196,
+              "p95": 0.402,
+              "max": 1.111
+            }
+          },
+          "telemetry_3": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.01374165330722,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.232,
+              "p95": 0.509,
+              "max": 1.692
+            }
+          },
+          "telemetry_4": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.01454049585621,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.273,
+              "p95": 0.479,
+              "max": 1.661
+            }
+          },
+          "telemetry_5": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.01491531075786,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.317,
+              "p95": 0.483,
+              "max": 3.978
+            }
+          },
+          "telemetry_6": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.01598379950345,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.356,
+              "p95": 0.549,
+              "max": 4.017
+            }
+          },
+          "telemetry_7": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.01651119676208,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.395,
+              "p95": 0.544,
+              "max": 4.002
+            }
+          },
+          "image": {
+            "sent": 125,
+            "read_back": 123,
+            "missing": 2,
+            "first_missing_sequences": [
+              0,
+              114
+            ],
+            "recorder": {
+              "actual_hz": 17.731349882290715,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 1,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 113364180,
+              "written_count": 123
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.754,
+              "p95": 0.959,
+              "max": 1.488
+            }
+          },
+          "camera_info": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 18.000450851113207,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 40000,
+              "written_count": 125
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.836,
+              "p95": 1.17,
+              "max": 2.014
+            }
+          }
+        },
+        "publish_window_s": 4.9904,
+        "max_publisher_late_ms": 2.7,
+        "recorder_cpu_pct_one_core": 7.61,
+        "recorder_tree_pids": [
+          38912
+        ],
+        "peak_observed_recorder_tree_rss_mib": 47.45,
+        "host_udp_error_deltas": {
+          "InErrors": 0,
+          "RcvbufErrors": 0,
+          "SndbufErrors": 0
+        },
+        "host_loopback_drop_deltas": {
+          "rx_dropped": 0,
+          "tx_dropped": 0
+        },
+        "buffer_bytes": 67108864,
+        "peak_queue_bytes": 923836,
+        "lost_total": 2
+      },
+      {
+        "backend_dir": "/tmp/rosbag-native-qa/backend",
+        "backend": "cpp",
+        "domain": 84,
+        "encoding": "mono8",
+        "qos": "best_effort",
+        "seconds": 5,
+        "telemetry_hz": 100,
+        "camera_hz": 25,
+        "bag_bytes": 114824626,
+        "topics": {
+          "telemetry_0": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.01316948903812,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.209,
+              "p95": 0.447,
+              "max": 1.638
+            }
+          },
+          "telemetry_1": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.01365762195522,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.19,
+              "p95": 0.5,
+              "max": 1.265
+            }
+          },
+          "telemetry_2": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.01402061777003,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.213,
+              "p95": 0.528,
+              "max": 1.252
+            }
+          },
+          "telemetry_3": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.01507038220957,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.255,
+              "p95": 0.769,
+              "max": 1.534
+            }
+          },
+          "telemetry_4": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.01583561207096,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.28,
+              "p95": 0.746,
+              "max": 1.609
+            }
+          },
+          "telemetry_5": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.01656725445046,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.314,
+              "p95": 0.708,
+              "max": 1.575
+            }
+          },
+          "telemetry_6": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.0175367683737,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.361,
+              "p95": 0.812,
+              "max": 1.652
+            }
+          },
+          "telemetry_7": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.01828336962646,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.385,
+              "p95": 0.747,
+              "max": 1.594
+            }
+          },
+          "image": {
+            "sent": 125,
+            "read_back": 124,
+            "missing": 1,
+            "first_missing_sequences": [
+              0
+            ],
+            "recorder": {
+              "actual_hz": 18.00096161190665,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 114285840,
+              "written_count": 124
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.815,
+              "p95": 0.934,
+              "max": 1.823
+            }
+          },
+          "camera_info": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 18.001272081116994,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 40000,
+              "written_count": 125
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.912,
+              "p95": 1.245,
+              "max": 2.353
+            }
+          }
+        },
+        "publish_window_s": 4.9904,
+        "max_publisher_late_ms": 2.44,
+        "recorder_cpu_pct_one_core": 7.41,
+        "recorder_tree_pids": [
+          39549
+        ],
+        "peak_observed_recorder_tree_rss_mib": 47.59,
+        "host_udp_error_deltas": {
+          "InErrors": 0,
+          "RcvbufErrors": 0,
+          "SndbufErrors": 0
+        },
+        "host_loopback_drop_deltas": {
+          "rx_dropped": 0,
+          "tx_dropped": 0
+        },
+        "buffer_bytes": 67108864,
+        "peak_queue_bytes": 923836,
+        "lost_total": 1
+      },
+      {
+        "backend_dir": "/tmp/rosbag-native-qa/backend",
+        "backend": "cpp",
+        "domain": 84,
+        "encoding": "mono8",
+        "qos": "best_effort",
+        "seconds": 5,
+        "telemetry_hz": 100,
+        "camera_hz": 25,
+        "bag_bytes": 114824651,
+        "topics": {
+          "telemetry_0": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.65045531591117,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.348,
+              "p95": 0.604,
+              "max": 3.894
+            }
+          },
+          "telemetry_1": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.65020567983245,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.282,
+              "p95": 0.581,
+              "max": 3.88
+            }
+          },
+          "telemetry_2": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.64997626684166,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.295,
+              "p95": 0.568,
+              "max": 3.868
+            }
+          },
+          "telemetry_3": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.64972847404962,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.314,
+              "p95": 0.565,
+              "max": 3.854
+            }
+          },
+          "telemetry_4": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.64811287832134,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.324,
+              "p95": 0.568,
+              "max": 3.84
+            }
+          },
+          "telemetry_5": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.64948618383914,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.346,
+              "p95": 0.581,
+              "max": 3.826
+            }
+          },
+          "telemetry_6": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.64892434732342,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.38,
+              "p95": 0.589,
+              "max": 3.808
+            }
+          },
+          "telemetry_7": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.64924084769797,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.41,
+              "p95": 0.612,
+              "max": 3.756
+            }
+          },
+          "image": {
+            "sent": 125,
+            "read_back": 124,
+            "missing": 1,
+            "first_missing_sequences": [
+              0
+            ],
+            "recorder": {
+              "actual_hz": 18.216186883991632,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 114285840,
+              "written_count": 124
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.85,
+              "p95": 1.089,
+              "max": 2.055
+            }
+          },
+          "camera_info": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 18.217710075405925,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 40000,
+              "written_count": 125
+            },
+            "bag_minus_header_ms": {
+              "p50": 1.041,
+              "p95": 1.378,
+              "max": 2.287
+            }
+          }
+        },
+        "publish_window_s": 4.9906,
+        "max_publisher_late_ms": 2.54,
+        "recorder_cpu_pct_one_core": 8.22,
+        "recorder_tree_pids": [
+          40818
+        ],
+        "peak_observed_recorder_tree_rss_mib": 47.47,
+        "host_udp_error_deltas": {
+          "InErrors": 0,
+          "RcvbufErrors": 0,
+          "SndbufErrors": 0
+        },
+        "host_loopback_drop_deltas": {
+          "rx_dropped": 0,
+          "tx_dropped": 0
+        },
+        "buffer_bytes": 67108864,
+        "peak_queue_bytes": 923836,
+        "lost_total": 1
+      }
+    ],
+    "native_rgbvideo": [
+      {
+        "backend_dir": "/tmp/rosbag-native-qa/backend",
+        "backend": "cpp",
+        "domain": 84,
+        "encoding": "rgb8",
+        "qos": "best_effort",
+        "seconds": 5,
+        "telemetry_hz": 100,
+        "camera_hz": 25,
+        "bag_bytes": 337620313,
+        "topics": {
+          "telemetry_0": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 74.00200850362047,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.198,
+              "p95": 0.532,
+              "max": 2.887
+            }
+          },
+          "telemetry_1": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 74.00301998386514,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.251,
+              "p95": 0.551,
+              "max": 2.903
+            }
+          },
+          "telemetry_2": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 74.00261491850323,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.237,
+              "p95": 0.398,
+              "max": 2.703
+            }
+          },
+          "telemetry_3": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 74.00330925130362,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.291,
+              "p95": 0.585,
+              "max": 2.933
+            }
+          },
+          "telemetry_4": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 74.0041024601835,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.316,
+              "p95": 0.507,
+              "max": 2.836
+            }
+          },
+          "telemetry_5": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 74.00443416593359,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.356,
+              "p95": 0.592,
+              "max": 2.964
+            }
+          },
+          "telemetry_6": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 74.00567132347226,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.39,
+              "p95": 0.563,
+              "max": 2.947
+            }
+          },
+          "telemetry_7": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 74.0060673446665,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.417,
+              "p95": 0.575,
+              "max": 2.956
+            }
+          },
+          "image": {
+            "sent": 125,
+            "read_back": 117,
+            "missing": 8,
+            "first_missing_sequences": [
+              0,
+              12,
+              14,
+              56,
+              75,
+              115,
+              117,
+              118
+            ],
+            "recorder": {
+              "actual_hz": 16.995324750191855,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 7,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 323488620,
+              "written_count": 117
+            },
+            "bag_minus_header_ms": {
+              "p50": 2.131,
+              "p95": 2.287,
+              "max": 4.998
+            }
+          },
+          "camera_info": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 18.283653458834557,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 40000,
+              "written_count": 125
+            },
+            "bag_minus_header_ms": {
+              "p50": 2.341,
+              "p95": 2.532,
+              "max": 5.232
+            }
+          },
+          "compressed": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 18.283497364644116,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 7079000,
+              "written_count": 125
+            },
+            "bag_minus_header_ms": {
+              "p50": 2.289,
+              "p95": 2.489,
+              "max": 5.179
+            }
+          },
+          "video": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 18.28334217708895,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 6482500,
+              "written_count": 125
+            },
+            "bag_minus_header_ms": {
+              "p50": 2.248,
+              "p95": 2.439,
+              "max": 5.131
+            }
+          }
+        },
+        "publish_window_s": 4.9904,
+        "max_publisher_late_ms": 3.68,
+        "recorder_cpu_pct_one_core": 13.02,
+        "recorder_tree_pids": [
+          39311
+        ],
+        "peak_observed_recorder_tree_rss_mib": 56.29,
+        "host_udp_error_deltas": {
+          "InErrors": 0,
+          "RcvbufErrors": 0,
+          "SndbufErrors": 0
+        },
+        "host_loopback_drop_deltas": {
+          "rx_dropped": 0,
+          "tx_dropped": 0
+        },
+        "buffer_bytes": 67108864,
+        "peak_queue_bytes": 2875816,
+        "lost_total": 8
+      },
+      {
+        "backend_dir": "/tmp/rosbag-native-qa/backend",
+        "backend": "cpp",
+        "domain": 84,
+        "encoding": "rgb8",
+        "qos": "best_effort",
+        "seconds": 5,
+        "telemetry_hz": 100,
+        "camera_hz": 25,
+        "bag_bytes": 348681329,
+        "topics": {
+          "telemetry_0": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.79915812304694,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.191,
+              "p95": 0.454,
+              "max": 2.195
+            }
+          },
+          "telemetry_1": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.80022824439149,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.231,
+              "p95": 0.502,
+              "max": 2.244
+            }
+          },
+          "telemetry_2": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.80054941634431,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.258,
+              "p95": 0.52,
+              "max": 2.259
+            }
+          },
+          "telemetry_3": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.80110460384064,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.288,
+              "p95": 0.537,
+              "max": 2.727
+            }
+          },
+          "telemetry_4": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.79985956186053,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.288,
+              "p95": 0.496,
+              "max": 2.682
+            }
+          },
+          "telemetry_5": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.80168663319346,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.34,
+              "p95": 0.556,
+              "max": 2.836
+            }
+          },
+          "telemetry_6": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.80199134432286,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.367,
+              "p95": 0.571,
+              "max": 2.85
+            }
+          },
+          "telemetry_7": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.80230339017155,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.404,
+              "p95": 0.603,
+              "max": 2.864
+            }
+          },
+          "image": {
+            "sent": 125,
+            "read_back": 121,
+            "missing": 4,
+            "first_missing_sequences": [
+              0,
+              13,
+              77,
+              108
+            ],
+            "recorder": {
+              "actual_hz": 17.691952902407245,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 3,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 334548060,
+              "written_count": 121
+            },
+            "bag_minus_header_ms": {
+              "p50": 2.08,
+              "p95": 2.513,
+              "max": 4.678
+            }
+          },
+          "camera_info": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 18.213183526200687,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 40000,
+              "written_count": 125
+            },
+            "bag_minus_header_ms": {
+              "p50": 2.252,
+              "p95": 2.474,
+              "max": 4.542
+            }
+          },
+          "compressed": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 18.212983657583692,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 7079000,
+              "written_count": 125
+            },
+            "bag_minus_header_ms": {
+              "p50": 2.215,
+              "p95": 2.447,
+              "max": 4.509
+            }
+          },
+          "video": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 18.212791673731505,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 6482500,
+              "written_count": 125
+            },
+            "bag_minus_header_ms": {
+              "p50": 2.177,
+              "p95": 2.397,
+              "max": 4.474
+            }
+          }
+        },
+        "publish_window_s": 4.9906,
+        "max_publisher_late_ms": 3.74,
+        "recorder_cpu_pct_one_core": 13.02,
+        "recorder_tree_pids": [
+          39919
+        ],
+        "peak_observed_recorder_tree_rss_mib": 56.15,
+        "host_udp_error_deltas": {
+          "InErrors": 0,
+          "RcvbufErrors": 0,
+          "SndbufErrors": 0
+        },
+        "host_loopback_drop_deltas": {
+          "rx_dropped": 0,
+          "tx_dropped": 0
+        },
+        "buffer_bytes": 67108864,
+        "peak_queue_bytes": 2875816,
+        "lost_total": 4
+      },
+      {
+        "backend_dir": "/tmp/rosbag-native-qa/backend",
+        "backend": "cpp",
+        "domain": 84,
+        "encoding": "rgb8",
+        "qos": "best_effort",
+        "seconds": 5,
+        "telemetry_hz": 100,
+        "camera_hz": 25,
+        "bag_bytes": 337620313,
+        "topics": {
+          "telemetry_0": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.38402177211043,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.382,
+              "p95": 0.589,
+              "max": 2.876
+            }
+          },
+          "telemetry_1": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.38352570102991,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.334,
+              "p95": 0.574,
+              "max": 2.861
+            }
+          },
+          "telemetry_2": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.38242464836978,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.336,
+              "p95": 0.531,
+              "max": 2.811
+            }
+          },
+          "telemetry_3": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.38434367472826,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.415,
+              "p95": 0.653,
+              "max": 2.907
+            }
+          },
+          "telemetry_4": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.38462001663648,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.44,
+              "p95": 0.679,
+              "max": 2.922
+            }
+          },
+          "telemetry_5": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.3856835908192,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.467,
+              "p95": 0.705,
+              "max": 2.938
+            }
+          },
+          "telemetry_6": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.38664133018735,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.494,
+              "p95": 0.739,
+              "max": 2.953
+            }
+          },
+          "telemetry_7": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 73.38617661362845,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.482,
+              "p95": 0.693,
+              "max": 2.89
+            }
+          },
+          "image": {
+            "sent": 125,
+            "read_back": 117,
+            "missing": 8,
+            "first_missing_sequences": [
+              0,
+              10,
+              11,
+              12,
+              43,
+              49,
+              106,
+              119
+            ],
+            "recorder": {
+              "actual_hz": 17.614553308837014,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 7,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 323488620,
+              "written_count": 117
+            },
+            "bag_minus_header_ms": {
+              "p50": 2.247,
+              "p95": 2.418,
+              "max": 4.061
+            }
+          },
+          "camera_info": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 18.141248551549804,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 40000,
+              "written_count": 125
+            },
+            "bag_minus_header_ms": {
+              "p50": 2.399,
+              "p95": 2.798,
+              "max": 4.927
+            }
+          },
+          "compressed": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 18.141481164921107,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 7079000,
+              "written_count": 125
+            },
+            "bag_minus_header_ms": {
+              "p50": 2.444,
+              "p95": 2.953,
+              "max": 5.025
+            }
+          },
+          "video": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 18.14110324097674,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 6482500,
+              "written_count": 125
+            },
+            "bag_minus_header_ms": {
+              "p50": 2.374,
+              "p95": 2.702,
+              "max": 4.85
+            }
+          }
+        },
+        "publish_window_s": 4.9904,
+        "max_publisher_late_ms": 4.42,
+        "recorder_cpu_pct_one_core": 14.03,
+        "recorder_tree_pids": [
+          41178
+        ],
+        "peak_observed_recorder_tree_rss_mib": 56.36,
+        "host_udp_error_deltas": {
+          "InErrors": 0,
+          "RcvbufErrors": 0,
+          "SndbufErrors": 0
+        },
+        "host_loopback_drop_deltas": {
+          "rx_dropped": 0,
+          "tx_dropped": 0
+        },
+        "buffer_bytes": 67108864,
+        "peak_queue_bytes": 2875816,
+        "lost_total": 8
+      }
+    ],
+    "native_rgbvideo_reliable": [
+      {
+        "backend_dir": "/tmp/rosbag-native-qa/backend",
+        "backend": "cpp",
+        "domain": 84,
+        "encoding": "rgb8",
+        "qos": "reliable",
+        "seconds": 5,
+        "telemetry_hz": 100,
+        "telemetry_topics": 8,
+        "raw_images": true,
+        "camera_hz": 25,
+        "bag_bytes": 359742287,
+        "topics": {
+          "telemetry_0": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 74.45596814416093,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.219,
+              "p95": 0.468,
+              "max": 2.908
+            }
+          },
+          "telemetry_1": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 74.45682042152268,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.262,
+              "p95": 0.588,
+              "max": 3.022
+            }
+          },
+          "telemetry_2": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 74.45736643542295,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.303,
+              "p95": 0.645,
+              "max": 3.038
+            }
+          },
+          "telemetry_3": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 74.45760077828719,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.342,
+              "p95": 0.718,
+              "max": 3.054
+            }
+          },
+          "telemetry_4": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 74.45711829056289,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.383,
+              "p95": 0.682,
+              "max": 2.985
+            }
+          },
+          "telemetry_5": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 74.45784533027397,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.438,
+              "p95": 0.815,
+              "max": 3.071
+            }
+          },
+          "telemetry_6": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 74.45867727231246,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.466,
+              "p95": 0.804,
+              "max": 3.004
+            }
+          },
+          "telemetry_7": {
+            "sent": 500,
+            "read_back": 500,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 74.45942110619485,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 26000,
+              "written_count": 500
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.526,
+              "p95": 0.867,
+              "max": 3.085
+            }
+          },
+          "image": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 18.417565185938756,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 345607500,
+              "written_count": 125
+            },
+            "bag_minus_header_ms": {
+              "p50": 2.162,
+              "p95": 4.238,
+              "max": 17.722
+            }
+          },
+          "camera_info": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 18.41822795928796,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 40000,
+              "written_count": 125
+            },
+            "bag_minus_header_ms": {
+              "p50": 2.293,
+              "p95": 2.943,
+              "max": 5.551
+            }
+          },
+          "compressed": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 18.41853163191217,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 7079000,
+              "written_count": 125
+            },
+            "bag_minus_header_ms": {
+              "p50": 2.325,
+              "p95": 2.993,
+              "max": 5.928
+            }
+          },
+          "video": {
+            "sent": 125,
+            "read_back": 125,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 18.418044158265538,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 6482500,
+              "written_count": 125
+            },
+            "bag_minus_header_ms": {
+              "p50": 2.244,
+              "p95": 2.917,
+              "max": 5.876
+            }
+          }
+        },
+        "publish_window_s": 4.9904,
+        "max_publisher_late_ms": 5.29,
+        "recorder_cpu_pct_one_core": 15.23,
+        "recorder_tree_pids": [
+          42021
+        ],
+        "peak_observed_recorder_tree_rss_mib": 56.29,
+        "host_udp_error_deltas": {
+          "InErrors": 0,
+          "RcvbufErrors": 0,
+          "SndbufErrors": 0
+        },
+        "host_loopback_drop_deltas": {
+          "rx_dropped": 0,
+          "tx_dropped": 0
+        },
+        "buffer_bytes": 67108864,
+        "peak_queue_bytes": 2875816,
+        "lost_total": 0
+      }
+    ],
+    "native_encoded_best_effort": [
+      {
+        "backend_dir": "/tmp/rosbag-native-qa/backend",
+        "backend": "cpp",
+        "domain": 84,
+        "encoding": "mono8",
+        "qos": "best_effort",
+        "seconds": 5,
+        "telemetry_hz": 200,
+        "telemetry_topics": 16,
+        "raw_images": false,
+        "camera_hz": 15,
+        "bag_bytes": 5616273,
+        "topics": {
+          "telemetry_0": {
+            "sent": 1000,
+            "read_back": 1000,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 147.47556523815658,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 52000,
+              "written_count": 1000
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.102,
+              "p95": 0.35,
+              "max": 1.036
+            }
+          },
+          "telemetry_1": {
+            "sent": 1000,
+            "read_back": 1000,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 147.4765126750389,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 52000,
+              "written_count": 1000
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.122,
+              "p95": 0.24,
+              "max": 0.983
+            }
+          },
+          "telemetry_2": {
+            "sent": 1000,
+            "read_back": 1000,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 147.47722687612207,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 52000,
+              "written_count": 1000
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.158,
+              "p95": 0.318,
+              "max": 2.726
+            }
+          },
+          "telemetry_3": {
+            "sent": 1000,
+            "read_back": 1000,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 147.47929189598557,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 52000,
+              "written_count": 1000
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.194,
+              "p95": 0.41,
+              "max": 2.758
+            }
+          },
+          "telemetry_4": {
+            "sent": 1000,
+            "read_back": 1000,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 147.4800304175787,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 52000,
+              "written_count": 1000
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.223,
+              "p95": 0.336,
+              "max": 2.66
+            }
+          },
+          "telemetry_5": {
+            "sent": 1000,
+            "read_back": 1000,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 147.48208576028617,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 52000,
+              "written_count": 1000
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.257,
+              "p95": 0.35,
+              "max": 2.643
+            }
+          },
+          "telemetry_6": {
+            "sent": 1000,
+            "read_back": 1000,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 147.482773329356,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 52000,
+              "written_count": 1000
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.287,
+              "p95": 0.392,
+              "max": 2.593
+            }
+          },
+          "telemetry_7": {
+            "sent": 1000,
+            "read_back": 1000,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 147.4847971647955,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 52000,
+              "written_count": 1000
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.32,
+              "p95": 0.43,
+              "max": 2.623
+            }
+          },
+          "telemetry_8": {
+            "sent": 1000,
+            "read_back": 1000,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 147.4854908329953,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 52000,
+              "written_count": 1000
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.356,
+              "p95": 0.476,
+              "max": 2.693
+            }
+          },
+          "telemetry_9": {
+            "sent": 1000,
+            "read_back": 1000,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 147.48745764729702,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 52000,
+              "written_count": 1000
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.383,
+              "p95": 0.497,
+              "max": 2.677
+            }
+          },
+          "telemetry_10": {
+            "sent": 1000,
+            "read_back": 1000,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 147.48814279886616,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 60000,
+              "written_count": 1000
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.418,
+              "p95": 0.558,
+              "max": 2.774
+            }
+          },
+          "telemetry_11": {
+            "sent": 1000,
+            "read_back": 1000,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 147.4902081244391,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 60000,
+              "written_count": 1000
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.446,
+              "p95": 0.576,
+              "max": 2.742
+            }
+          },
+          "telemetry_12": {
+            "sent": 1000,
+            "read_back": 1000,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 147.49089087184583,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 60000,
+              "written_count": 1000
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.483,
+              "p95": 0.621,
+              "max": 2.79
+            }
+          },
+          "telemetry_13": {
+            "sent": 1000,
+            "read_back": 1000,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 147.49152992823454,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 60000,
+              "written_count": 1000
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.506,
+              "p95": 0.633,
+              "max": 2.71
+            }
+          },
+          "telemetry_14": {
+            "sent": 1000,
+            "read_back": 1000,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 147.49356129342357,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 60000,
+              "written_count": 1000
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.542,
+              "p95": 0.679,
+              "max": 2.806
+            }
+          },
+          "telemetry_15": {
+            "sent": 1000,
+            "read_back": 1000,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 147.49424775458291,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 60000,
+              "written_count": 1000
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.572,
+              "p95": 0.707,
+              "max": 2.823
+            }
+          },
+          "camera_info": {
+            "sent": 75,
+            "read_back": 75,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 10.820929783955105,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 24000,
+              "written_count": 75
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.808,
+              "p95": 1.043,
+              "max": 3.095
+            }
+          },
+          "video": {
+            "sent": 75,
+            "read_back": 75,
+            "missing": 0,
+            "first_missing_sequences": [],
+            "recorder": {
+              "actual_hz": 10.821187270960634,
+              "dropped_count": 0,
+              "max_hz": 0.0,
+              "middleware_lost_count": 0,
+              "queue_dropped_count": 0,
+              "write_error_count": 0,
+              "written_bytes": 3889500,
+              "written_count": 75
+            },
+            "bag_minus_header_ms": {
+              "p50": 0.884,
+              "p95": 1.023,
+              "max": 2.908
+            }
+          }
+        },
+        "publish_window_s": 4.9955,
+        "max_publisher_late_ms": 2.63,
+        "recorder_cpu_pct_one_core": 15.41,
+        "recorder_tree_pids": [
+          41764
+        ],
+        "peak_observed_recorder_tree_rss_mib": 46.08,
+        "host_udp_error_deltas": {
+          "InErrors": 0,
+          "RcvbufErrors": 0,
+          "SndbufErrors": 0
+        },
+        "host_loopback_drop_deltas": {
+          "rx_dropped": 0,
+          "tx_dropped": 0
+        },
+        "unselected_rgb_frames_sent": 75,
+        "unselected_rgb_matched_subscribers_at_start_and_end": 0,
+        "buffer_bytes": 67108864,
+        "peak_queue_bytes": 55188,
+        "lost_total": 0
+      }
+    ]
+  }
+}

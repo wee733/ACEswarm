@@ -125,6 +125,10 @@ mkdir -p ~/.agents/skills
 ln -sfn "$PWD"/ACEswarm/aceswarm-skills/aceswarm-skills/* ~/.agents/skills/
 ```
 
+## PX4 uXRCE-DDS ground station
+
+The [ground station deployment guide](document/README.md) includes the tested two-device configuration, telemetry topics, Panel Hub layout, and Foxglove setup.
+
 ## Developer documentation
 
 Development, architecture, runtime, bootstrap, build, and release documentation is in [`docs_dev/`](docs_dev/).

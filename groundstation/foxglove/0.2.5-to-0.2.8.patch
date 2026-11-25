@@ -1,0 +1,83 @@
+--- a/backend/visualize_foxglove_server/foxglove_sdk_server.py
++++ b/backend/visualize_foxglove_server/foxglove_sdk_server.py
+@@ -137,7 +137,8 @@
+ 
+     @staticmethod
+     def _supports_metadata(metadata: dict[str, Any] | None) -> bool:
+-        return "rotor" in robot_type_from_metadata(metadata)
++        robot_type = robot_type_from_metadata(metadata).strip()
++        return "rotor" in robot_type or robot_type.startswith("uxrce_") or robot_type.endswith("_mocap")
+ 
+     def add_robot_display(self, name: str, metadata: dict[str, Any] | None = None) -> bool:
+         robot_type = robot_type_from_metadata(metadata)
+--- a/backend/visualize_foxglove_server/visualizer_rotor.py
++++ b/backend/visualize_foxglove_server/visualizer_rotor.py
+@@ -96,6 +96,7 @@
+     history_duration_sec: float = 5.0
+     gps_origin: GpsOriginConfig = field(default_factory=GpsOriginConfig)
+     color: RgbaColor = field(default_factory=lambda: RED)
++    robot_type: str = "rotor"
+ 
+ 
+ @dataclass(frozen=True)
+@@ -213,6 +214,7 @@
+         history_duration_sec=max(_float_value(values.get("history_duration_sec"), 5.0), 0.0),
+         gps_origin=parse_gps_origin(values.get("gps_origin")),
+         color=parse_rgba_color(values.get("color"), RED),
++        robot_type=_str_value(values.get("robot_type"), "rotor").strip(),
+     )
+ 
+ 
+@@ -242,12 +244,13 @@
+         history_duration_sec=history_duration_sec,
+         gps_origin=gps_origin,
+         color=color,
++        robot_type=_str_value(values.get("robot_type"), current.robot_type).strip(),
+     )
+ 
+ 
+ def metadata_from_runtime(runtime: RotorDisplayRuntime) -> dict[str, Any]:
+     return {
+-        "robot_type": "rotor",
++        "robot_type": runtime.robot_type,
+         "position_source": runtime.position_source,
+         "history_duration_sec": runtime.history_duration_sec,
+         "gps_origin": {
+@@ -364,9 +367,13 @@
+         if not isinstance(sources, dict):
+             sources = {}
+         data = dict(data)
+-        for source, field_name in (("pose", "position"), ("attitude", "orientation"), ("global", "global")):
++        # MAVROS reports orientation with pose; PX4 may report attitude separately.
++        attitude_source = "attitude" if "attitude" in sources else "pose"
++        for source, field_name in (("pose", "position"), (attitude_source, "orientation"), ("global", "global")):
+             info = sources.get(source)
+-            if isinstance(info, dict) and info.get("fresh") is False:
++            if isinstance(info, dict) and (
++                info.get("stale") is True or info.get("received") is False or info.get("fresh") is False
++            ):
+                 data[field_name] = None
+         with self.lock:
+             if stream == "state":
+--- a/manifest.yaml
++++ b/manifest.yaml
+@@ -2,7 +2,7 @@
+ name: Foxglove Studio Embed
+ description: Embed Foxglove Studio as an AivudaOS app package with a built-in viewer
+   UI (ROS1/ROS2 bridge targets support Docker).
+-version: 0.2.5
++version: 0.2.8
+ run:
+   entrypoint: start.sh
+   args: []
+--- a/start.sh
++++ b/start.sh
+@@ -2,7 +2,7 @@
+ set -e
+ 
+ echo "[start.sh] started at $(date '+%Y-%m-%d %H:%M:%S')"
+-echo "[start.sh] app: ${AIVUDA_APP_ID:-foxglove_studio_embed}@${AIVUDA_APP_VERSION:-0.2.5}"
++echo "[start.sh] app: ${AIVUDA_APP_ID:-foxglove_studio_embed}@${AIVUDA_APP_VERSION:-0.2.8}"
+ 
+ APP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ CONFIG_PATH="${AIVUDA_APP_CONFIG_PATH:-${APP_ROOT}/config/default_config.yaml}"
