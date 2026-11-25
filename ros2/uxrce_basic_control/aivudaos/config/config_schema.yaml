@@ -1,0 +1,22 @@
+type: object
+required: [uxrce_basic_control]
+additionalProperties: false
+properties:
+  uxrce_basic_control:
+    type: object
+    additionalProperties: false
+    required: [agent_id, px4_namespace, ros_domain_id, zenoh_config, climb_rate_m_s, max_takeoff_height_m,
+               xy_speed_m_s, max_xy_radius_m, min_goto_height_m, goto_fence_shape, field_east_size_m, field_north_size_m]
+    properties:
+      agent_id: {type: string, pattern: "^[a-zA-Z0-9_.-]*$", default: "", description: "Zenoh 单一节点名，与遥测 agent_id 一致", need_restart: true}
+      px4_namespace: {type: string, default: "", description: "PX4 ROS 2 命名空间", need_restart: true}
+      ros_domain_id: {type: integer, minimum: 0, maximum: 232, default: 0, need_restart: true}
+      zenoh_config: {type: string, default: "", description: "Zenoh 会话配置文件路径，留空使用本机发现", need_restart: true}
+      climb_rate_m_s: {type: number, exclusiveMinimum: 0, maximum: 2.0, default: 0.5, need_restart: true}
+      max_takeoff_height_m: {type: number, exclusiveMinimum: 0, default: 10.0, need_restart: true}
+      xy_speed_m_s: {type: number, exclusiveMinimum: 0, maximum: 2.0, default: 0.5, description: "GoTo 水平速度上限 (m/s)", need_restart: true}
+      goto_fence_shape: {type: string, enum: [circle, rectangle], default: circle, description: "GoTo 水平围栏形状，中心为动捕原点", need_restart: true}
+      max_xy_radius_m: {type: number, exclusiveMinimum: 0, default: 3.0, description: "圆形围栏半径 (m)", need_restart: true}
+      field_east_size_m: {type: number, exclusiveMinimum: 0, default: 50.0, description: "矩形场地沿 ENU x（东西）的全长 (m)", need_restart: true}
+      field_north_size_m: {type: number, exclusiveMinimum: 0, default: 30.0, description: "矩形场地沿 ENU y（南北）的全长 (m)", need_restart: true}
+      min_goto_height_m: {type: number, exclusiveMinimum: 0, default: 0.3, description: "GoTo 最低高度 (m)，不得超过 max_takeoff_height_m", need_restart: true}

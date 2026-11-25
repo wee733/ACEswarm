@@ -1,0 +1,40 @@
+type: object
+properties:
+  jetson_monitor:
+    type: object
+    properties:
+      agent_id:
+        type: string
+        need_restart: true
+        pattern: '^[A-Za-z0-9_.-]*$'
+        description: 设备 ID。留空时使用本机 Zenoh 网关报告的 local_agent_id。
+      interval_s:
+        type: number
+        need_restart: true
+        default: 2.0
+        minimum: 0.5
+        maximum: 3
+        description: 采样请求与遥测发布间隔（秒）。jtop 与其他客户端共用服务端采样周期。
+      clocks_mode:
+        type: string
+        default: keep
+        enum: [keep, enable, disable]
+        enumLabels: [保留当前状态, 开启锁频, 关闭锁频]
+        need_restart: true
+        description: 保存后仅需重启本 App。收到首个 jtop 样本后按选择设置一次 jetson_clocks，结果见应用日志。
+      fan_profile:
+        type: string
+        default: keep
+        enum: [keep, quiet, cool, manual]
+        enumLabels: [保留当前状态, 静音自动, 强冷自动, 手动 PWM]
+        need_restart: true
+        description: 保存后重启本 App 时应用一次。quiet 和 cool 使用设备自动温控，manual 使用下方的风速百分比。
+      fan_speed_pct:
+        type: integer
+        default: 100
+        minimum: 0
+        maximum: 100
+        need_restart: true
+        description: 手动模式的 PWM 占空比（%）。100 为全速，0 可使风扇停转。其他模式忽略此值。
+    required: [agent_id, interval_s]
+required: [jetson_monitor]

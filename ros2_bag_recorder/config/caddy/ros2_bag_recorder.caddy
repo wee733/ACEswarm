@@ -1,0 +1,5 @@
+@ros2_bag_recorder_api path /ros2_bag_recorder/api /ros2_bag_recorder/api/*
+handle @ros2_bag_recorder_api {
+    uri strip_prefix /ros2_bag_recorder/api
+    reverse_proxy 127.0.0.1:17580
+}

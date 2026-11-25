@@ -1,0 +1,10 @@
+ros2_bag_recorder:
+  ros:
+    distro: auto
+    setup_script: ""
+    extra_overlay_setup_scripts: []
+    ros_domain_id: 0
+    use_sim_time: false
+  recorder:
+    output_dir: "~/ACEswarm_ws/experiments/rosbags"
+    write_buffer_mib: 64

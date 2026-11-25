@@ -1,0 +1,50 @@
+type: object
+required: [ros2_bag_recorder]
+properties:
+  ros2_bag_recorder:
+    type: object
+    required: [ros, recorder]
+    properties:
+      ros:
+        type: object
+        required: [distro, setup_script, extra_overlay_setup_scripts, ros_domain_id, use_sim_time]
+        properties:
+          distro:
+            type: string
+            default: auto
+            minLength: 1
+            description: ROS 2 发行版。auto 优先使用当前 ROS_DISTRO，再查找 /opt/ros。
+          setup_script:
+            type: string
+            default: ""
+            description: ROS 2 基础 setup.bash 路径。留空按发行版选择。
+          extra_overlay_setup_scripts:
+            type: array
+            items: {type: string, minLength: 1}
+            default: []
+            description: 按顺序加载的 overlay 脚本，例如 ~/ros2_ws/install/local_setup.bash。
+          ros_domain_id:
+            type: integer
+            minimum: 0
+            maximum: 232
+            default: 0
+            description: 使用与发布端相同的 ROS_DOMAIN_ID。修改后重新启动应用。
+          use_sim_time:
+            type: boolean
+            default: false
+            description: 使用 /clock 提供的仿真时间作为录包时间戳。
+      recorder:
+        type: object
+        required: [output_dir]
+        properties:
+          output_dir:
+            type: string
+            minLength: 1
+            default: "~/ACEswarm_ws/experiments/rosbags"
+            description: 持久录包目录。使用绝对路径或 ~/ 开头的路径，修改后重新启动应用。
+          write_buffer_mib:
+            type: integer
+            minimum: 1
+            maximum: 512
+            default: 64
+            description: C++ 写盘队列的容量上限（MiB）。高带宽图像可按内存预算调大，修改后重启应用。

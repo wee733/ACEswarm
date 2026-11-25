@@ -1,0 +1,25 @@
+uxrce_telemetry:
+  # PX4 v1.17/main: VehicleStatus v5, VehicleLocalPosition v1, BatteryStatus v1,
+  # VehicleAttitude v0, TrajectorySetpoint v0.
+  agent_id: ""
+  robot_type: uxrce_mocap
+  ros_domain_id: 0
+  px4_namespace: ""
+  vision_source: px4
+  vision_topic: ""
+  status_text_topic: ""
+  avahi_hostname: ""
+  publish_heartbeat: true
+  publish_standard_odom: true
+  standard_odom_topic: /swarm/odom
+  standard_odom_hz: 20.0
+  zenoh_config: ""
+  stale_timeout_sec:
+    local_pos: 2.0
+    imu: 2.0
+    vision_pose: 2.0
+    state: 5.0
+    setpoint: 5.0
+    battery: 10.0
+    gps: 10.0
+    status_text: 8.0

@@ -1,0 +1,38 @@
+type: object
+required: [uxrce_telemetry]
+additionalProperties: false
+properties:
+  uxrce_telemetry:
+    type: object
+    description: "PX4 v1.17/main (px4_msgs: VehicleStatus v5, VehicleLocalPosition v1, BatteryStatus v1, VehicleAttitude v0, TrajectorySetpoint v0)"
+    required: [ros_domain_id, px4_namespace, vision_source, vision_topic, status_text_topic, avahi_hostname, publish_heartbeat, zenoh_config]
+    additionalProperties: false
+    properties:
+      agent_id: {type: string, pattern: "^[a-zA-Z0-9_.-]*$", default: "", description: "Zenoh 节点名。留空时使用旧配置 uav_id 或主机名。", need_restart: true}
+      uav_id: {type: string, pattern: "^[a-zA-Z0-9_.-]+$", description: "兼容 0.1.0 的节点名", need_restart: true}
+      robot_type: {type: string, minLength: 1, default: uxrce_mocap, need_restart: true}
+      ros_domain_id: {type: integer, minimum: 0, maximum: 232, default: 0, need_restart: true}
+      px4_namespace: {type: string, default: "", need_restart: true}
+      vision_source: {type: string, enum: [px4, odometry, pose_stamped, none], default: px4, need_restart: true}
+      vision_topic: {type: string, default: "", need_restart: true}
+      status_text_topic: {type: string, default: "", need_restart: true}
+      avahi_hostname: {type: string, default: "", need_restart: true}
+      publish_heartbeat: {type: boolean, default: true, need_restart: true}
+      publish_standard_odom: {type: boolean, default: true, need_restart: true}
+      standard_odom_topic: {type: string, minLength: 1, default: /swarm/odom, need_restart: true}
+      standard_odom_hz: {type: number, exclusiveMinimum: 0, default: 20.0, need_restart: true}
+      zenoh_config: {type: string, default: "", need_restart: true}
+      state_timeout_s: {type: number, exclusiveMinimum: 0, description: "旧版配置项。stale_timeout_sec.state 优先。", need_restart: true}
+      stale_timeout_sec:
+        type: object
+        additionalProperties: false
+        description: "按遥测流设置有效期（秒）"
+        properties:
+          local_pos: {type: number, exclusiveMinimum: 0, default: 2.0, need_restart: true}
+          imu: {type: number, exclusiveMinimum: 0, default: 2.0, need_restart: true}
+          vision_pose: {type: number, exclusiveMinimum: 0, default: 2.0, need_restart: true}
+          state: {type: number, exclusiveMinimum: 0, default: 5.0, need_restart: true}
+          setpoint: {type: number, exclusiveMinimum: 0, default: 5.0, need_restart: true}
+          battery: {type: number, exclusiveMinimum: 0, default: 10.0, need_restart: true}
+          gps: {type: number, exclusiveMinimum: 0, default: 10.0, need_restart: true}
+          status_text: {type: number, exclusiveMinimum: 0, default: 8.0, need_restart: true}

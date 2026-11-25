@@ -1,0 +1,9 @@
+app_id: jetson_monitor
+name: Jetson Monitor
+version: 0.1.3
+description: 通过 jtop 将 Jetson 健康状态发布到地面站。可在应用配置中选择锁频和风扇设置。
+run:
+  entrypoint: ./start.sh
+  args: []
+default_config_path: ./config/default_config.yaml
+config_schema_path: ./config/config_schema.yaml

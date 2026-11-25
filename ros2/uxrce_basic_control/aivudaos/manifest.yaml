@@ -1,0 +1,12 @@
+app_id: uxrce_basic_control
+name: PX4 uXRCE Basic Control (PX4 v1.17/main)
+version: 0.1.3
+description: >-
+  Zenoh Controlpad 与 PX4 ROS 2 外部模式。适配 px4_msgs VehicleStatus v5 /
+  VehicleCommand v0 / VehicleCommandAck v0，也支持机载实际使用的 v5 / v1 / v2。
+  消息绑定须与飞控端点匹配。随包原生外部模式适配构建时的 ROS 2 和 px4_msgs。
+run:
+  entrypoint: ./start.sh
+  args: []
+default_config_path: ./config/default_config.yaml
+config_schema_path: ./config/config_schema.yaml

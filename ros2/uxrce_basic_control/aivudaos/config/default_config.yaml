@@ -1,0 +1,13 @@
+uxrce_basic_control:
+  agent_id: ""
+  px4_namespace: ""
+  ros_domain_id: 0
+  zenoh_config: ""
+  climb_rate_m_s: 0.5
+  max_takeoff_height_m: 10.0
+  xy_speed_m_s: 0.5
+  max_xy_radius_m: 3.0
+  goto_fence_shape: circle
+  field_east_size_m: 50.0
+  field_north_size_m: 30.0
+  min_goto_height_m: 0.3

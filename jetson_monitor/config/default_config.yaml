@@ -1,0 +1,6 @@
+jetson_monitor:
+  agent_id: ""
+  interval_s: 2.0
+  clocks_mode: keep
+  fan_profile: keep
+  fan_speed_pct: 100

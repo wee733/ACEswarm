@@ -1,0 +1,12 @@
+app_id: ros2_bag_recorder
+name: ROS 2 Bag & Log Recorder
+description: 按话题限频录制 ROS 2 数据，保存 rosout 日志，查看与下载历史录包。
+version: 0.2.2
+run:
+  entrypoint: ./start.sh
+  args: []
+icon: ./assets/icon.svg
+ui_index_path: ./ui/index.html
+default_config_path: ./config/default_config.yaml
+config_schema_path: ./config/config_schema.yaml
+caddyfile_config_path: ./config/caddy/ros2_bag_recorder.caddy

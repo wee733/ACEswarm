@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>ROS 2 Bag &amp; Log Recorder</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./style.css">
+  <script src="./app.js" defer></script>
+</head>
+<body>
+  <svg class="symbols" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="wave" viewBox="0 0 24 24"><path d="M2 13h4l2.1-6.5 3.4 13 3-16L17 13h5"/></symbol>
+    <symbol id="topics-icon" viewBox="0 0 24 24"><circle cx="5" cy="5" r="2"/><circle cx="18" cy="9" r="2"/><circle cx="18" cy="18" r="2"/><path d="M5 7v7a4 4 0 0 0 4 4h7M5 9h11"/></symbol>
+    <symbol id="log-icon" viewBox="0 0 24 24"><path d="m4 7 5 5-5 5m8 0h8"/></symbol>
+    <symbol id="archive-icon" viewBox="0 0 24 24"><path d="M4 8v12h16V8M3 4h18v4H3zm6 8h6"/></symbol>
+    <symbol id="scan-icon" viewBox="0 0 24 24"><path d="M20 10a8.1 8.1 0 0 0-14.4-3L3 10m0-6v6h6m-5 4a8.1 8.1 0 0 0 14.4 3L21 14m0 6v-6h-6"/></symbol>
+    <symbol id="search-icon" viewBox="0 0 24 24"><circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/></symbol>
+    <symbol id="save-icon" viewBox="0 0 24 24"><path d="M4 3h13l3 3v15H4zm4 0v6h8V3M8 21v-7h8v7"/></symbol>
+    <symbol id="trash-icon" viewBox="0 0 24 24"><path d="M3 6h18M9 6V3h6v3m-10 0 1 15h12l1-15m-9 4v7m4-7v7"/></symbol>
+    <symbol id="clock-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="disk-icon" viewBox="0 0 24 24"><path d="M3 13h18v6H3zm0 0 3-8h12l3 8M16 16h2"/></symbol>
+    <symbol id="download-icon" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/></symbol>
+    <symbol id="copy-icon" viewBox="0 0 24 24"><path d="M8 8h12v13H8zM4 17V3h12"/></symbol>
+  </svg>
+  <header class="app-bar">
+    <div class="brand"><span class="brand-mark"><svg><use href="#wave"/></svg></span><h1>ROS 2 Bag &amp; Log Recorder</h1></div>
+    <span id="connection" class="connection" role="status"><i></i><span>连接中</span></span>
+  </header>
+  <main>
+    <section class="session card" aria-labelledby="session-title">
+      <div class="section-head session-head"><div class="heading-group"><h2 id="session-title">录制任务</h2><span class="state-chip" id="state"><i></i>待机</span></div>
+        <button type="button" id="record" class="record action-primary" disabled><i class="record-dot"></i><span>开始录制</span></button>
+      </div>
+      <div class="settings">
+        <div class="basic-fields">
+          <label>录包名称<input id="bag-name" class="mono" placeholder="自动生成时间戳名称" autocomplete="off"></label>
+          <label>实验备注<input id="notes" placeholder="选填" autocomplete="off"></label>
+          <div><label for="preset">话题预设</label><div class="inline preset-fields"><select id="preset"><option value="">选择预设</option></select><button type="button" class="icon-button" id="save-preset" title="保存当前话题为预设" aria-label="保存当前话题为预设"><svg><use href="#save-icon"/></svg></button><button type="button" class="icon-button" id="delete-preset" title="删除预设" aria-label="删除预设" disabled><svg><use href="#trash-icon"/></svg></button></div></div>
+        </div>
+        <div class="storage-fields">
+          <label>存储格式<select id="format"><option value="mcap">MCAP</option><option value="sqlite3">SQLite3</option></select></label>
+          <label>压缩<select id="compression"><option value="none">无压缩</option><option value="zstd_fast">Zstd · 快速</option><option value="zstd_small">Zstd · 高压缩率</option></select></label>
+          <label>按大小分片<span class="with-unit"><input type="number" id="split-mb" min="0" step="1" value="0" title="0 表示关闭按大小分片"><span>MB</span></span></label>
+          <label>按时长分片<span class="with-unit"><input type="number" id="split-seconds" min="0" step="1" value="0" title="0 表示关闭按时长分片"><span>秒</span></span></label>
+        </div>
+      </div>
+      <div class="metrics">
+        <div><span class="metric-label"><svg><use href="#clock-icon"/></svg>录制时长</span><strong id="elapsed">—</strong></div>
+        <div><span class="metric-label"><svg><use href="#archive-icon"/></svg>已写大小</span><strong id="size">—</strong></div>
+        <div><span class="metric-label"><svg><use href="#wave"/></svg>写入速率</span><strong id="rate">—</strong></div>
+        <div><span class="metric-label"><svg><use href="#disk-icon"/></svg>可用磁盘</span><strong id="free">—</strong></div>
+        <div class="queue-metric"><span class="metric-label"><svg><use href="#topics-icon"/></svg>写入队列占用 / 上限</span><strong id="queue">—</strong><small id="queue-peak"></small></div>
+      </div>
+    </section>
+    <div id="notice" class="notice" role="status" hidden><span></span><button type="button" aria-label="关闭提示">×</button></div>
+    <div class="tabs" role="tablist" aria-label="录制面板">
+      <button role="tab" id="tab-topics" aria-controls="panel-topics" aria-selected="true" tabindex="0"><svg><use href="#topics-icon"/></svg>话题配置</button>
+      <button role="tab" id="tab-logs" aria-controls="panel-logs" aria-selected="false" tabindex="-1"><svg><use href="#log-icon"/></svg>实时日志</button>
+      <button role="tab" id="tab-history" aria-controls="panel-history" aria-selected="false" tabindex="-1"><svg><use href="#archive-icon"/></svg>历史录包</button>
+    </div>
+    <section id="panel-topics" class="card" role="tabpanel" aria-labelledby="tab-topics">
+      <div class="section-head"><div class="heading-group"><h2>话题列表</h2><span class="counter" id="topic-count">—</span></div>
+        <button id="scan" type="button"><svg><use href="#scan-icon"/></svg>立即扫描</button>
+      </div>
+      <div class="topic-toolbar">
+        <label class="search"><svg><use href="#search-icon"/></svg><input id="search" type="search" aria-label="搜索话题或消息类型" placeholder="搜索话题或消息类型"></label>
+        <select id="namespace" aria-label="命名空间"><option value="">全部命名空间</option></select>
+        <label class="checkbox"><input id="selected-only" type="checkbox">仅看已勾选</label>
+      </div>
+      <div class="bulk-toolbar"><div class="inline bulk-select"><button id="select-all" class="subtle" type="button">全选当前列表</button><button id="select-video" title="添加当前命名空间的编码视频及同一相机的 CameraInfo" class="subtle" type="button">选择编码视频及内参</button><button id="clear" class="subtle" type="button">清空选择</button><span id="selection-count" class="selection-count">已选 0 项</span></div>
+        <div class="inline bulk-hz"><label for="batch-hz">批量限频</label><span class="with-unit"><input id="batch-hz" type="number" min="0" step="any" value="0"><span>Hz</span></span><button id="apply-hz" class="subtle" type="button">应用到已选</button></div>
+      </div>
+      <div class="table-scroll" tabindex="0" aria-label="话题数据"><table class="topic-table"><thead><tr><th scope="col"><span class="sr-only">选择</span></th><th scope="col">话题 / 消息类型</th><th scope="col">发布 / 订阅</th><th scope="col">QoS</th><th scope="col">上限 Hz <small>0 全速</small></th><th scope="col" class="num">实测 Hz</th><th scope="col" class="num">已写帧</th><th scope="col" class="num" title="录制器按本话题的频率上限主动跳过的消息">限频丢弃</th><th scope="col" class="num" title="写盘队列达到上限时丢弃的消息">队列丢弃</th><th scope="col" class="num" title="仅统计 ROS 中间件通过 message_lost 事件报告的丢失，实际丢帧可能更多">中间件报告丢失</th><th scope="col" class="num">已写字节</th></tr></thead><tbody id="topic-rows"></tbody></table></div>
+      <p id="topic-empty" class="empty">正在扫描 ROS 2 话题…</p>
+    </section>
+    <section id="panel-logs" class="card" role="tabpanel" aria-labelledby="tab-logs" hidden>
+      <div class="section-head"><div class="heading-group"><h2>实时日志</h2><span class="counter mono">/rosout</span></div><span id="log-count" class="muted">0 条</span></div>
+      <div class="log-settings"><label class="checkbox"><input id="save-rosout" type="checkbox" checked>录制时同步保存 /rosout</label><span class="muted mono">rosout.log · rosout.jsonl</span></div>
+      <div class="topic-toolbar"><select id="level" aria-label="日志级别"><option value="">全部级别</option><option>DEBUG</option><option>INFO</option><option>WARN</option><option>ERROR</option><option>FATAL</option></select><label class="search"><svg><use href="#search-icon"/></svg><input id="node" type="search" placeholder="按节点名过滤" aria-label="按节点名过滤"></label></div>
+      <div class="log-scroll"><table class="log-table"><thead><tr><th>时间</th><th>级别</th><th>节点</th><th>消息</th></tr></thead><tbody id="log-rows"></tbody></table></div><p id="log-empty" class="empty">等待 /rosout 日志…</p>
+    </section>
+    <section id="panel-history" class="card" role="tabpanel" aria-labelledby="tab-history" hidden>
+      <div class="section-head"><div class="heading-group"><h2>历史录包</h2><span class="counter" id="bag-count">—</span></div><button type="button" id="refresh-history"><svg><use href="#scan-icon"/></svg>刷新</button></div>
+      <div class="table-scroll"><table class="history-table"><thead><tr><th>录包 / 备注</th><th>开始时间</th><th>时长</th><th>大小</th><th>话题数</th><th>消息数</th><th>操作</th></tr></thead><tbody id="history-rows"></tbody></table></div><p id="history-empty" class="empty">正在读取历史录包…</p>
+    </section>
+  </main>
+  <dialog id="dialog" aria-labelledby="dialog-title"><form method="dialog"><h2 id="dialog-title"></h2><p id="dialog-text"></p><label id="dialog-field" hidden>预设名称<input id="dialog-input" autocomplete="off" maxlength="100"></label><div class="dialog-controls"><button value="cancel" formnovalidate>取消</button><button id="dialog-submit" class="action-primary" value="ok">确认</button></div></form></dialog>
+</body>
+</html>
